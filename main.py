@@ -1,45 +1,45 @@
 import argparse
-import os
 
-from groq import Groq, GroqError
-
-
-try:
-    client = Groq(api_key=os.environ.get("GROQ_KEY"))
-except GroqError:
-    print("Ensure the API key is set and valid")
+from llm import client, ConnectionError
 
 
-parser = argparse.ArgumentParser(
-    prog="LiteLookup",
-    description="Fetches a beginner infornation about any concept you want to learn about right from the comfort of your command line",
-)
+def get_input():
+    parser = argparse.ArgumentParser(
+        prog="LiteLookup",
+        description="Fetches a beginner infornation about any concept you want to learn about right from the comfort of your command line",
+    )
+    parser.add_argument(
+        "lookup",
+        help="look an information up and print it out",
+    )
+    parser.add_argument("content", nargs="*")
+    parser.add_argument("--version", action="version", version="%(prog)s 1.0")
+    args = parser.parse_args()
+    return " ".join(args.content)
 
-parser.add_argument(
-    "lookup",
-    help="look an information up and print it out",
-)
-parser.add_argument(
-    "-v", "--verbose", help="increase output verbosity", action="count", default=0
-)
-parser.add_argument("content", nargs="*")
 
-parser.add_argument("--version", action="version", version="%(prog)s 1.0")
-args = parser.parse_args()
+def generate_response():
+    user_message = f"""
+Return a very concise information about the concept that I will provide
+you with. It should generally be like the most important information
+about the concept and should be enough to at least educate someone that
+has never heard the concept before. You do not need to add
+any preamble. Just provide the information from the first line.
+The concept is {get_input()}.
+"""
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": user_message,
+                }
+            ],
+            model="llama3-8b-8192",
+        )
+        return chat_completion.choices[0].message.content
+    except ConnectionError:
+        return "Error connecting to server. Check your connection and retry"
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": " ".join(args.content),
-        }
-    ],
-    model="llama3-8b-8192",
-)
 
-if args.verbose >= 2:
-    print(chat_completion.choices[0].message.content)
-elif args.verbose >= 1:
-    print("Normal verbosity turned on")
-else:
-    print(" ".join(args.content))
+print(generate_response())
