@@ -3,7 +3,7 @@ from main import (
     validate_input,
     InvalidInputError,
     InputTooLongError,
-    Unsupportedcharacterserror,
+    UnsupportedCharactersError,
 )
 
 
@@ -15,11 +15,12 @@ def test_validate_empty_input():
 
 
 @pytest.mark.parametrize(
-    ("input, expected"),
+    "input, expected",
     (
         ("A normal test input", "a normal test input"),
         ("TEST INPUT ALL CAPS", "test input all caps"),
         ("  MixeD TesT INPUT  ", "mixed test input"),
+        ("Sample-input with one hyphen ", "sample-input with one hyphen"),
     ),
 )
 def test_validate_input(input, expected):
@@ -33,3 +34,20 @@ def test_validate_input_too_long():
                  and should raise an InputTooLongError "
         )
     assert str(e.value) == "Text input too long. Consider shortening."
+
+
+def test_validate_unsupported_input_chars():
+    with pytest.raises(UnsupportedCharactersError) as e:
+        validate_input("__This is @ test with unupported chars like & and >")
+
+    assert (
+        str(e.value)
+        == "Input contains unsupported characters. Please use only letters and numbers"
+    )
+
+
+def test_validate_input_contains_only_one_hyphen():
+    with pytest.raises(UnsupportedCharactersError) as e:
+        validate_input("input with double -- or more --- hyphens together")
+
+    assert str(e.value) == "Text cannot contain two or more hyphens together."

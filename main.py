@@ -5,6 +5,15 @@ import re
 from llm import client, ConnectionError
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+terminal_handler = logging.StreamHandler()
+terminal_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+terminal_handler.setFormatter(formatter)
+
+logger.addHandler(terminal_handler)
 
 
 class InvalidInputError(Exception):
@@ -15,7 +24,7 @@ class InputTooLongError(InvalidInputError):
     pass
 
 
-class Unsupportedcharacterserror(InvalidInputError):
+class UnsupportedCharactersError(InvalidInputError):
     pass
 
 
@@ -44,12 +53,12 @@ def validate_input(input: str) -> str:
     if len(input) > 100:
         raise InputTooLongError("Text input too long. Consider shortening.")
     # ensuring text only contains numbers, letters and hyphen
-    if not re.match(r"[a-zA-Z0-9\-\s]+", input):
-        raise ValueError(
+    if not re.fullmatch(r"[a-zA-Z0-9\-\s]+", input):
+        raise UnsupportedCharactersError(
             "Input contains unsupported characters. Please use only letters and numbers"
         )
-    if re.match(r"[\-]{2,}", input):
-        raise Unsupportedcharacterserror(
+    if re.search(r"[\-]{2,}", input):
+        raise UnsupportedCharactersError(
             "Text cannot contain two or more hyphens together."
         )
 
@@ -86,7 +95,8 @@ def main():
         input = get_input()
         response = generate_response(input)
         print(response)
-    except (InvalidInputError, InputTooLongError, Unsupportedcharacterserror) as e:
+    except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
+        logger.error(f"Invalid input: {e} ")
         print(f"Error: {e}")
     except Exception as e:
         print(f"Unexoected error: {e}")
