@@ -9,6 +9,9 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
 
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
       
