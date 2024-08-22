@@ -1,19 +1,8 @@
 import argparse
-import logging
+from log import logger
 import re
 
 from llm import client, ConnectionError
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-terminal_handler = logging.StreamHandler()
-terminal_handler.setLevel(logging.INFO)
-
-formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-terminal_handler.setFormatter(formatter)
-
-logger.addHandler(terminal_handler)
 
 
 class InvalidInputError(Exception):
@@ -52,15 +41,16 @@ def validate_input(input: str) -> str:
         )
     if len(input) > 100:
         raise InputTooLongError("Text input too long. Consider shortening.")
-    # ensuring text only contains numbers, letters and hyphen
-    if not re.fullmatch(r"[a-zA-Z0-9\-\s]+", input):
-        raise UnsupportedCharactersError(
-            "Input contains unsupported characters. Please use only letters and numbers"
-        )
-    if re.search(r"[\-]{2,}", input):
-        raise UnsupportedCharactersError(
-            "Text cannot contain two or more hyphens together."
-        )
+    # ensuring text only contains numbers, letters and one hyphen between words
+    if not re.fullmatch(r"[a-zA-Z0-9\s]+(-[a-zA-Z0-9]+)*", input):
+        if re.search(r"[^a-zA-Z0-9\s-]", input):
+            raise UnsupportedCharactersError(
+                "Input contains unsupported characters. Please use only letters, numbers and hyphens."
+            )
+        if re.search(r"[-]{2,}", input):
+            raise UnsupportedCharactersError(
+                "Text cannot contain two or more hyphens together."
+            )
 
     output = input.lower().strip()
     return output
@@ -93,13 +83,14 @@ The concept is {concept}.
 def main():
     try:
         input = get_input()
+        logger.info("fetching response...\n\n")
         response = generate_response(input)
         print(response)
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
         logger.error(f"Invalid input: {e} ")
-        print(f"Error: {e}")
     except Exception as e:
         print(f"Unexoected error: {e}")
 
 
-main()
+if __name__ == "__main__":
+    main()

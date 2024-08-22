@@ -24,14 +24,15 @@ def test_validate_empty_input():
     ),
 )
 def test_validate_input(input, expected):
+    print(validate_input(input))
     assert validate_input(input) == expected
 
 
 def test_validate_input_too_long():
     with pytest.raises(InputTooLongError) as e:
         validate_input(
-            "This is a very long test input that exceeds the acceptable length \
-                 and should raise an InputTooLongError "
+            "This is a very long test input that exceeds the acceptable \
+                length and should raise an InputTooLongError "
         )
     assert str(e.value) == "Text input too long. Consider shortening."
 
@@ -42,7 +43,7 @@ def test_validate_unsupported_input_chars():
 
     assert (
         str(e.value)
-        == "Input contains unsupported characters. Please use only letters and numbers"
+        == "Input contains unsupported characters. Please use only letters, numbers and hyphens."
     )
 
 
