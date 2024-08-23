@@ -1,3 +1,5 @@
 groq
 pytest
 python-dotenv
+requests-cache
+redis

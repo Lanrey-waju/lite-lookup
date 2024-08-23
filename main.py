@@ -2,6 +2,8 @@ import argparse
 from log import logger
 import re
 
+import redis
+
 from llm import client, ConnectionError
 
 
@@ -15,6 +17,9 @@ class InputTooLongError(InvalidInputError):
 
 class UnsupportedCharactersError(InvalidInputError):
     pass
+
+
+r = redis.Redis()
 
 
 def get_input() -> str:
@@ -57,13 +62,17 @@ def validate_input(input: str) -> str:
 
 
 def generate_response(concept) -> str:
-    user_message = f"""
-Return a very concise information about the concept that I will provide
-you with. It should generally be like the most important information
-about the concept and should be enough to at least educate someone that
-has never heard the concept before. You do not need to add
-any preamble. Just provide the information from the first line.
-The concept is {concept}.
+    cached_response = r.get(concept)
+    if cached_response:
+        return cached_response.decode("utf-8")
+    user_message = (
+        user_message
+    ) = f"""Provide a concise, beginner-friendly explanation of '{concept}' in 2-3 sentences. Include:
+1. A clear definition
+2. Its primary significance or use
+3. One key fact or example (if relevant)
+
+Begin your response immediately without any preamble.""
 """
     try:
         chat_completion = client.chat.completions.create(
@@ -75,7 +84,9 @@ The concept is {concept}.
             ],
             model="llama3-8b-8192",
         )
-        return chat_completion.choices[0].message.content
+        response = chat_completion.choices[0].message.content
+        r.set(concept, response, ex=3600)
+        return response
     except ConnectionError:
         return "Error connecting to server. Check your connection and retry"
 
