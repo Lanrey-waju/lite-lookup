@@ -4,7 +4,7 @@ import re
 
 import redis
 
-from llm import client, ConnectionError
+from .llm import client, ConnectionError
 
 
 class InvalidInputError(Exception):
@@ -97,6 +97,7 @@ def main():
         logger.info("fetching response...\n\n")
         response = generate_response(input)
         print(response)
+        logger.info("Success")
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
         logger.error(f"Invalid input: {e} ")
     except Exception as e:
