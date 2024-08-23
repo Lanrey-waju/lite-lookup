@@ -1,5 +1,5 @@
 import argparse
-from log import logger
+from litelookup.log import logger
 import re
 
 import redis
