@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="litelookup",
-    version="0.1.2",
+    version="0.1.4",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,
@@ -21,11 +21,11 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    intall_requires=[
+    install_requires=[
         "groq",
+        "redis",
         "pytest",
         "python-dotenv",
-        "redis",
     ],
     entry_points={
         "console_scripts": [

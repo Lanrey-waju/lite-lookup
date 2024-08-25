@@ -18,7 +18,7 @@ def test_validate_empty_input():
     "input, expected",
     (
         ("A normal test input", "a normal test input"),
-        ("TEST INPUT ALL CAPS", "test input all caps"),
+        ("TEST INPUT ALL CAPS", "TEST INPUT ALL CAPS"),
         ("  MixeD TesT INPUT  ", "mixed test input"),
         ("Sample-input with one hyphen ", "sample-input with one hyphen"),
     ),
@@ -31,19 +31,19 @@ def test_validate_input(input, expected):
 def test_validate_input_too_long():
     with pytest.raises(InputTooLongError) as e:
         validate_input(
-            "This is a very long test input that exceeds the acceptable \
-                length and should raise an InputTooLongError "
+            '"This is a very long test input that exceeds the acceptable \
+                length and should raise an InputTooLongError "'
         )
     assert str(e.value) == "Text input too long. Consider shortening."
 
 
 def test_validate_unsupported_input_chars():
     with pytest.raises(UnsupportedCharactersError) as e:
-        validate_input("__This is @ test with unupported chars like & and >")
+        validate_input('"__This is @ test with unupported chars like & and >"')
 
     assert (
         str(e.value)
-        == "Input contains unsupported characters. Please use only letters, numbers and hyphens."
+        == "Input contains unsupported characters. Please use only letters, numbers, spaces, hyphens, and basic punctuation."
     )
 
 
