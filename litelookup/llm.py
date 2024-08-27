@@ -1,6 +1,7 @@
 import os
 import sys
 
+import httpx
 from dotenv import load_dotenv
 
 from groq import Groq, GroqError, APIConnectionError
@@ -13,7 +14,8 @@ load_dotenv()
 
 def initiate_client():
     try:
-        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        persistent_client = httpx.Client()
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"), http_client=persistent_client)
     except GroqError:
         logger.warning("Ensure the API key is set and valid")
         sys.exit(1)

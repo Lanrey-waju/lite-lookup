@@ -18,7 +18,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 - Python 3.8 or higher
 - Redis server installed and running
-- Groq LLM API access — Register and your free API key at [Groq](https://console.groq.com/keys)
+- Groq LLM API access — You will need to store a valid Groq API Key as a secret. You can generate one for free [here](https://console.groq.com/keys).
 
 ### Setup
 

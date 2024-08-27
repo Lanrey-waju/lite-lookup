@@ -9,7 +9,7 @@ from litelookup.main import (
 
 def test_validate_empty_input():
     with pytest.raises(InvalidInputError) as e:
-        validate_input("")
+        validate_input("", False)
 
     assert str(e.value) == "Input cannot be empty. Please provide a concept to check"
 
@@ -24,22 +24,23 @@ def test_validate_empty_input():
     ),
 )
 def test_validate_input(input, expected):
-    print(validate_input(input))
-    assert validate_input(input) == expected
+    print(validate_input(input, False))
+    assert validate_input(input, False) == expected
 
 
 def test_validate_input_too_long():
     with pytest.raises(InputTooLongError) as e:
         validate_input(
-            '"This is a very long test input that exceeds the acceptable \
-                length and should raise an InputTooLongError "'
+            "This is a very long test input that exceeds the acceptable \
+                length and should raise an InputTooLongError ",
+            False,
         )
     assert str(e.value) == "Text input too long. Consider shortening."
 
 
 def test_validate_unsupported_input_chars():
     with pytest.raises(UnsupportedCharactersError) as e:
-        validate_input('"__This is @ test with unupported chars like & and >"')
+        validate_input('"__This is @ test with unupported chars like & and >",', False)
 
     assert (
         str(e.value)
@@ -49,6 +50,6 @@ def test_validate_unsupported_input_chars():
 
 def test_validate_input_contains_only_one_hyphen():
     with pytest.raises(UnsupportedCharactersError) as e:
-        validate_input("input with double -- or more --- hyphens together")
+        validate_input("input with double -- or more --- hyphens together", False)
 
     assert str(e.value) == "Text cannot contain two or more hyphens together."
