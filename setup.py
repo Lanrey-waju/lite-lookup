@@ -10,7 +10,7 @@ setup(
     description="A command line tool for quick concept lookups",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Lanrey-waju/litelookup",
+    url="https://github.com/Lanrey-waju/lite-lookup",
     packages=find_packages(
         exclude=[
             "litelookup.tests",

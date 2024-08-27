@@ -1,10 +1,12 @@
 import argparse
-from litelookup import log
 import re
 
+from rich.padding import Padding
+from rich import print
 import redis
 
 from .llm import client, ConnectionError
+from litelookup import log
 
 
 class InvalidInputError(Exception):
@@ -97,11 +99,12 @@ def main():
         input = get_input()
         log.logger.info("fetching response...\n\n")
         response = generate_response(input)
-        print(response)
+        output = Padding(response, (1, 1), style="magenta", expand=False)
+        print(output)
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
         log.logger.error(f"Invalid input: {e} ")
     except Exception as e:
-        print(f"Unexoected error: {e}")
+        ppprint(f"Unexoected error: {e}")
 
 
 if __name__ == "__main__":

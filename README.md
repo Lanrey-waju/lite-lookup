@@ -1,4 +1,6 @@
-# LiteLookup
+# LiteLookup 🔎
+
+![code coverage badge](https://github.com/Lanrey-waju/lite-lookup/actions/workflows/ci.yml/badge.svg)
 
 LiteLookup is a command-line tool developed in Python that fetches beginner-level information about any concept directly from the command line. This tool is designed for users who want quick, concise, and accessible explanations without leaving their terminal.
 
@@ -16,7 +18,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 - Python 3.8 or higher
 - Redis server installed and running
-- Groq LLM API access (get your free API key)
+- Groq LLM API access — Register and your free API key at [Groq](https://console.groq.com/keys)
 
 ### Setup
 
@@ -26,6 +28,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 2. **Configure the environment variables:**
 
+    Export the API Key from [Groq](https://console.groq.com/keys) like so:
     `export GROQ_API_KEY=your_api_key_here`
 
 3. Ensure Redis is running:
