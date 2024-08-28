@@ -54,7 +54,7 @@ For a more detailed response, including examples or code snippets:
 
 `lookup "git rebase" -v'
 
-### Intersctive Shell Mode
+### Interactive Shell Mode
 Enter the interactive mode for continuous lookups without reconnecting:
 
 - `litelookup -i`
