@@ -25,7 +25,6 @@ class UnsupportedCharactersError(InvalidInputError):
     pass
 
 
-r = redis.Redis()
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -85,8 +84,8 @@ def validate_input(input: str, interactive: bool) -> str:
     return input.lower().strip()
 
 
-def generate_response(concept: str) -> str:
-    cached_response = r.get(concept)
+def generate_response(concept: str, redis_client: redis.Redis) -> str:
+    cached_response = redis_client.get(concept)
     if cached_response:
         return cached_response.decode("utf-8")
     user_message = (
@@ -99,24 +98,17 @@ def generate_response(concept: str) -> str:
 Begin your response immediately without any preamble. Do not hallucinate.""
 """
     try:
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": user_message,
-                }
-            ],
-            model="llama3-8b-8192",
-        )
-        response = chat_completion.choices[0].message.content
-        r.set(concept, response, ex=3600)
+        response = groq_api_call(user_message, client)
+        redis_client.set(concept, response, ex=3600)
         return response
     except ConnectionError:
         return "Error connecting to server. Check your connection and retry"
 
 
-def generate_verbose_response(concept) -> str:
-    cached_response = r.get(concept)
+def generate_verbose_response(
+    concept: str, client: httpx.Client, redis_client: redis.Redis
+) -> str:
+    cached_response = redis_client.get(concept)
     if cached_response:
         return cached_response.decode("utf-8")
     user_message = (
@@ -131,17 +123,8 @@ If this is a programming-related concept, please include a brief, illustrative c
 
 Begin your response immediately without any preamble. Ensure the explanation remains accessible to beginners while providing more depth than a basic description. Do not hallucinate."""
     try:
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": user_message,
-                }
-            ],
-            model="llama3-8b-8192",
-        )
-        response = chat_completion.choices[0].message.content
-        r.set(concept, response, ex=3600)
+        response = groq_api_call(user_message, client)
+        redis_client.set(concept, response, ex=3600)
         return response
     except ConnectionError:
         return "Error connecting to server. Check your connection and retry"
@@ -180,7 +163,7 @@ def groq_api_call(message: str, client: httpx.Client) -> str:
                 raise  # Client errors should not be retried
 
 
-def interactive_session(interactive: bool):
+def interactive_session(session_interactive: bool):
     # Set up connection pool
     with httpx.Client(
         http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
@@ -188,21 +171,21 @@ def interactive_session(interactive: bool):
         # Set up Redis connection
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
 
-        while True:
+        while session_interactive:
             user_input = input(
                 "Enter a concept to lookup (or 'quit' to exit): "
             ).strip()
-            text = validate_input(user_input, interactive)
+            text = validate_input(user_input, session_interactive)
 
-            if not interactive:
+            if text == "quit":
+                session_interactive = False
                 print("Exiting LiteLookup. Goodbye!")
                 break
 
             if text:
                 response = generate_response_interactive(text, client, redis_client)
-                print(response)
-                # if interactive:
-                #     print(f"Verbose info: Lookup performed for '{text}'")
+                output = Padding(response, (1, 1), style="magenta", expand=False)
+                print(output)
             else:
                 print("Please enter a valid concept.")
 
@@ -229,10 +212,15 @@ Begin your response immediately without any preamble. Do not hallucinate.""
 
 def main():
     try:
+        client = httpx.Client(
+            http2=True,
+            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
+        )
+        redis_client = redis.Redis()
         input, verbosity, interactivity = get_input()
         if verbosity:
             log.logger.info("fetching verbose response...\n\n")
-            response = generate_verbose_response(input)
+            response = generate_verbose_response(input, client, redis_client)
             output = Padding(response, (1, 1), style="magenta", expand=False)
             print(output)
         elif interactivity:
@@ -241,7 +229,7 @@ def main():
             interactive_session(interactivity)
         else:
             log.logger.info("fetching response...\n\n")
-            response = generate_response(input)
+            response = generate_response(input, client, redis_client)
             output = Padding(response, (1, 1), style="magenta", expand=False)
             print(output)
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
