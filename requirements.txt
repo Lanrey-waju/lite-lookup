@@ -3,3 +3,4 @@ pytest
 python-dotenv
 redis
 httpx[http2]
+rich
