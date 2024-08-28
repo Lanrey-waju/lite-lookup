@@ -5,12 +5,12 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="litelookup",
-    version="0.1.4",
+    version="0.1.5",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Lanrey-waju/litelookup",
+    url="https://github.com/Lanrey-waju/lite-lookup",
     packages=find_packages(
         exclude=[
             "litelookup.tests",
@@ -26,6 +26,7 @@ setup(
         "redis",
         "pytest",
         "python-dotenv",
+        "httpx[http2]",
     ],
     entry_points={
         "console_scripts": [
