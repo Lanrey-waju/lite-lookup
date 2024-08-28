@@ -19,7 +19,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - Redis server installed and running
 - Groq LLM API access — You will need to store a valid Groq API Key as a secret. You can generate one for free [here](https://console.groq.com/keys).
 
@@ -57,11 +57,12 @@ For a more detailed response, including examples or code snippets:
 ### Interactive Shell Mode
 Enter the interactive mode for continuous lookups without reconnecting:
 
-- `litelookup -i`
+- `lookup -i`
 
-While in the interactive mode, you can toggle verbosity:
+If you wish to generate verbose responses while in the interactive mode, use
 
-- `litelookup -i -v`
+- `lookup -i -v` or `lookup -iv`
+The responses you get with this will be slightly detailed without overwhelming you. 
 
 To exit the interactive mode, type:
 

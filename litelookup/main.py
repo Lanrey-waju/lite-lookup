@@ -28,7 +28,6 @@ def get_input() -> tuple[str, bool, bool]:
         description="""Fetches a beginner infornation about any concept you
         want to learn about right from the comfort of your command line""",
     )
-    # group = parser.add_mutually_exclusive_group()
     parser.add_argument("content", nargs="*")
     parser.add_argument(
         "-v",
@@ -42,7 +41,7 @@ def get_input() -> tuple[str, bool, bool]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 1.0")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.6")
     args = parser.parse_args()
 
     if args.interactive and not args.content:
@@ -114,7 +113,8 @@ def generate_verbose_response(
 
 If this is a programming-related concept, please include a brief, illustrative code example.
 
-Begin your response immediately without any preamble. Ensure the explanation remains accessible to beginners while providing more depth than a basic description. Do not hallucinate.
+Begin your response immediately without any preamble. Be direct and provide more depth than a basic description.
+Do not hallucinate.
 """
     try:
         response = groq_api_call(user_message, client)
@@ -139,7 +139,7 @@ def interactive_session(session_interactive: bool, verbosity: bool = False):
 
         while session_interactive:
             user_input = input(
-                "Enter a concept to lookup (wnter 'q' or 'quit' to exit): "
+                "Enter a concept to lookup (enter 'q' or 'quit' to exit): "
             ).strip()
             text = validate_input(user_input, session_interactive)
 
