@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="litelookup",
-    version="0.1.4",
+    version="0.1.5",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,
@@ -26,6 +26,7 @@ setup(
         "redis",
         "pytest",
         "python-dotenv",
+        "httpx[http2]",
     ],
     entry_points={
         "console_scripts": [
