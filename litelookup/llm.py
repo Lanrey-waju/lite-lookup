@@ -17,12 +17,12 @@ GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 def groq_api_call(message: str, client: httpx.Client) -> str:
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json",
     }
     data = {
         "model": "llama3-8b-8192",
         "messages": [{"role": "user", "content": message}],
-        "max_tokens": 100,
+        "max_tokens": 300,
         "temperature": 0.7,
     }
 
@@ -30,14 +30,15 @@ def groq_api_call(message: str, client: httpx.Client) -> str:
     for attempt in range(max_retries):
         try:
             response = client.post(
-                GROQ_API_URL, headers=headers, json=data, timeout=10.0
+                GROQ_API_URL, headers=headers, json=data, timeout=15.0
             )
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
         except (httpx.ConnectError, httpx.TimeoutException):
             if attempt == max_retries - 1:
                 raise
-            time.sleep(retry_delay * (2**attempt))  # Exponential backoff
+            # Exponential backoff
+            time.sleep(retry_delay * (2**attempt))
         except httpx.HTTPStatusError as e:
             if e.response.status_code >= 500:
                 if attempt == max_retries - 1:
