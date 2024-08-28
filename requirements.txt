@@ -2,4 +2,4 @@ groq
 pytest
 python-dotenv
 redis
-"httpx[http2]"
+httpx[http2]
