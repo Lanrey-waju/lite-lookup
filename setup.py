@@ -28,6 +28,7 @@ setup(
         "python-dotenv",
         "httpx[http2]",
         "prompt_toolkit",
+        "rich",
     ],
     entry_points={
         "console_scripts": [

@@ -25,9 +25,12 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 ### Setup
 
-1. **Install LiteLookup via pip:**
+1. **Install LiteLookup via pip or pipx:**
 
-   `pip install litelookup`
+   `pip install litelookup` or `pipx install litelookup`
+
+   Check if LiteLookup is correctly installed with
+   `lookup --version`
 
 2. **Configure the environment variables:**
 
