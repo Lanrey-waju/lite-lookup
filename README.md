@@ -57,6 +57,12 @@ For a more detailed response, including examples or code snippets:
 
 `lookup "git rebase" -v'
 
+### Programming Mode
+
+lookup "programming concept" -p
+
+For example, `lookup "print() in python" -p`
+
 ### Interactive Shell Mode
 Enter the interactive mode for continuous lookups without reconnecting:
 
@@ -66,6 +72,9 @@ If you wish to generate verbose responses while in the interactive mode, use
 
 - `lookup -i -v` or `lookup -iv`
 The responses you get with this will be slightly detailed without overwhelming you. 
+
+- `lookup -i -p` or `lookup -ip
+The responses you get with this will be more finetuned for programming. 
 
 To exit the interactive mode, type:
 
