@@ -5,6 +5,8 @@ import redis
 import httpx
 from rich.padding import Padding
 from rich import print
+from prompt_toolkit import PromptSession
+from prompt_toolkit.history import FileHistory
 
 from .llm import groq_api_call, ConnectionError
 from litelookup import log
@@ -41,7 +43,7 @@ def get_input() -> tuple[str, bool, bool]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.6")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.7")
     args = parser.parse_args()
 
     if args.interactive and not args.content:
@@ -61,7 +63,7 @@ def validate_input(input: str, interactive: bool) -> str:
         raise InputTooLongError("Text input too long. Consider shortening.")
 
     # Validate content inside the quotes
-    if not re.fullmatch(r"[a-zA-Z0-9\s.,';:!?-]+", input):
+    if not re.fullmatch(r"[a-zA-Z0-9\s.,\")(q';:!?-]+", input):
         raise UnsupportedCharactersError(
             "Input contains unsupported characters. Please use only letters, numbers, spaces, hyphens, and basic punctuation."
         )
@@ -130,6 +132,7 @@ def print_formatted_response(response: str):
 
 
 def interactive_session(session_interactive: bool, verbosity: bool = False):
+    session = PromptSession(history=FileHistory(".litelookup_history"))
     # Set up connection pool
     with httpx.Client(
         http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
@@ -138,12 +141,17 @@ def interactive_session(session_interactive: bool, verbosity: bool = False):
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
 
         while session_interactive:
-            user_input = input(
-                "Enter a concept to lookup (enter 'q' or 'quit' to exit): "
-            ).strip()
+            try:
+                user_input = session.prompt(
+                    "Enter a concept to lookup (enter 'q' , 'quit' or 'exit' to exit): "
+                ).strip()
+            except KeyboardInterrupt:
+                continue
+            except EOFError:
+                break
             text = validate_input(user_input, session_interactive)
 
-            if text == "quit" or text == "q":
+            if text.lower() in ("q", "quit", "exit"):
                 session_interactive = False
                 print("Exiting LiteLookup. Goodbye!")
                 break
