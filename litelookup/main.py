@@ -6,6 +6,7 @@ import httpx
 from rich.padding import Padding
 from rich import print
 from prompt_toolkit import PromptSession
+from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.history import FileHistory
 
 from .llm import groq_api_call, ConnectionError
@@ -159,6 +160,13 @@ def print_formatted_response(response: str):
     print(output)
 
 
+def bottom_toolbar():
+    return HTML(
+        ' Press <i>"q", "quit", or "exit"</i> to <style bg="ansired">quit</style> <b>litelookup</b>'
+    )
+    # return "Press 'q', 'quit', or 'exit' to exit"
+
+
 def interactive_session(
     session_interactive: bool, verbosity: bool = False, programming: bool = False
 ):
@@ -173,7 +181,7 @@ def interactive_session(
         while session_interactive:
             try:
                 user_input = session.prompt(
-                    "Enter a concept to lookup (enter 'q' , 'quit' or 'exit' to exit): "
+                    ">> lookup: ", bottom_toolbar=bottom_toolbar
                 ).strip()
             except KeyboardInterrupt:
                 continue
