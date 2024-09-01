@@ -98,7 +98,7 @@ def generate_response(
 2. Its primary significance or use
 3. One key fact or example (if relevant)
 
-Begin your response immediately without any preamble. Do not hallucinate.""
+Begin your response immediately without any preamble. Do not hallucinate.
 """
     try:
         response = groq_api_call(user_message, client)

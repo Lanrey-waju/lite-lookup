@@ -165,4 +165,4 @@ cython_debug/
 
 # redis
 dump.rdb
-.litelookup_history
+.litelookup_historyq
