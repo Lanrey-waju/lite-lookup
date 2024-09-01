@@ -41,7 +41,7 @@ def get_input() -> tuple[str, bool, bool]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.7")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.8")
     args = parser.parse_args()
 
     if args.interactive and not args.content:
