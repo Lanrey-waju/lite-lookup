@@ -1,6 +1,5 @@
 import argparse
 import re
-import os
 
 import redis
 import httpx
@@ -16,7 +15,7 @@ from .responses import (
     generate_programming_response,
     generate_verbose_response,
 )
-from config.config import configure_api_key
+from config.config import configure_api_key, load_api_key
 
 
 class InvalidInputError(Exception):
@@ -50,7 +49,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.8")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.9")
 
     parser.add_argument(
         "-p",
@@ -95,7 +94,7 @@ def validate_input(input: str, interactive: bool) -> str:
 
 
 def print_formatted_response(response: str):
-    output = Padding(response, (1, 1), style="white", expand=False)
+    output = Padding(response, (1, 1), style="green", expand=False)
     print(output)
 
 
@@ -144,7 +143,7 @@ def interactive_session(
 
 
 def main():
-    if not os.path.exists(".env"):
+    if load_api_key() is None:
         configure_api_key()
     try:
         client = httpx.Client(

@@ -1,16 +1,13 @@
-import os
 import time
 
 import httpx
-from dotenv import load_dotenv
 
 from groq import APIConnectionError
+from config.config import load_api_key
 
 ConnectionError = APIConnectionError
 
-load_dotenv()
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY = load_api_key()
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
@@ -45,4 +42,4 @@ def groq_api_call(message: str, client: httpx.Client) -> str:
                     raise
                 time.sleep(retry_delay * (2**attempt))  # Exponential backoff
             else:
-                raise  # Client errors should not be retried
+                raise e  # Client errors should not be retried

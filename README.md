@@ -34,8 +34,12 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 2. **Configure the environment variables:**
 
-    Export the API Key from [Groq](https://console.groq.com/keys) like so:
-    `export GROQ_API_KEY=your_api_key_here`
+    Enter the API Key from [Groq](https://console.groq.com/keys) in the prompt from the first usage:
+
+    `>>Enter API KEY here: your-api_key here` 
+    
+    Replace "your_api_key_here" with the API key to begin interacting with the tool.
+
 
 3. Ensure Redis is running:
 
