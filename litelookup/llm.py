@@ -1,17 +1,15 @@
 import time
 
 import httpx
-
 from groq import APIConnectionError
-from config.config import load_api_key
 
-ConnectionError = APIConnectionError
+from config.config import load_api_key
 
 GROQ_API_KEY = load_api_key()
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
-def groq_api_call(message: str, client: httpx.Client) -> str:
+def groq_api_call(message: str, client: httpx.Client) -> str | None:
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json",
@@ -31,9 +29,9 @@ def groq_api_call(message: str, client: httpx.Client) -> str:
             )
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
-        except (httpx.ConnectError, httpx.TimeoutException):
+        except (httpx.ConnectError, httpx.TimeoutException, APIConnectionError) as e:
             if attempt == max_retries - 1:
-                raise
+                print(f"Connection error occured: {e}")
             # Exponential backoff
             time.sleep(retry_delay * (2**attempt))
         except httpx.HTTPStatusError as e:
@@ -42,4 +40,5 @@ def groq_api_call(message: str, client: httpx.Client) -> str:
                     raise
                 time.sleep(retry_delay * (2**attempt))  # Exponential backoff
             else:
-                raise e  # Client errors should not be retried
+                raise  # Client errors should not be retried
+    return None
