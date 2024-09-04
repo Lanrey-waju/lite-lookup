@@ -11,7 +11,7 @@
             "datefmt": "%Y-%m-%dT%H:%M:%S%z"
         },
         "json": {
-            "()": "logging_config.MyJSONFormatter",
+            "()": "log.logging_config.MyJSONFormatter",
             "fmt_keys": {
                 "level": "levelname",
                 "message": "message",
@@ -26,7 +26,7 @@
     },
     "filters": {
         "unwanted_logs": {
-            "()": "logging_config.ExcludeFilter",
+            "()": "log.logging_config.ExcludeFilter",
             "names": [
                 "httpcore",
                 "hpack",

@@ -1,7 +1,7 @@
 import argparse
 import re
 import logging
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 
 import redis
 import httpx
@@ -65,7 +65,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="returns a no-fluff response on a programming query",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.0")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.1")
 
     group.add_argument(
         "-p",

@@ -1,7 +1,7 @@
 import redis
 import httpx
 import logging
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 
 from litelookup.llm import groq_api_call
 
