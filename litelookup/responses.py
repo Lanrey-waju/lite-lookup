@@ -112,3 +112,32 @@ def generate_programming_response(
     except Exception as e:
         logger.error(f"An unexpected error occured: {e}.")
         return "An unexpected error occured. Check your connection and retry"
+
+
+def generate_nofluff_response(
+    concept: str, client: httpx.Client, redis_client: redis.Redis
+) -> str:
+    try:
+        cached_response = redis_client.get(concept + "_c")
+        if cached_response:
+            logger.info("Got a cached response\n")
+            return cached_response.decode("utf-8")
+        user_message = f""""Provide a crisp, 1-2 sentence response that directly answers the query: {concept}. Do not include any additional explanation or context - just the essential information needed to address the request."
+    """
+        response = groq_api_call(user_message, client)
+        if response is None:
+            return (
+                "Sorry, there was a problem connecting to the server. Please try again"
+            )
+        try:
+            redis_client.set(concept + "_c", response, ex=3600)
+            return response
+        except redis.RedisError as e:
+            logger.error(f"Redis error: {e}")
+            return "An error occured wjile retrieving query. Please try again"
+    except redis.RedisError as e:
+        logger.error(f"Redis error: {e}")
+        return "An error occured wjile retrieving query. Please try again"
+    except Exception as e:
+        logger.error(f"An unexpected error occured: {e}.")
+        return "An unexpected error occured. Check your connection and retry"

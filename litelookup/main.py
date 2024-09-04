@@ -16,6 +16,7 @@ from .responses import (
     generate_response,
     generate_programming_response,
     generate_verbose_response,
+    generate_nofluff_response,
 )
 from config.config import configure_api_key, load_api_key
 
@@ -44,8 +45,9 @@ def get_input() -> tuple[str, argparse.Namespace]:
         programming-focused information, and -i for an interactive shell. 
         Perfect for quick lookups and continuous learning sessions.""",
     )
+    group = parser.add_mutually_exclusive_group()
     parser.add_argument("content", nargs="*")
-    parser.add_argument(
+    group.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -57,9 +59,15 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
+    group.add_argument(
+        "-c",
+        "--command",
+        action="store_true",
+        help="returns a no-fluff response on a programming query",
+    )
     parser.add_argument("--version", action="version", version="%(prog)s 0.2.0")
 
-    parser.add_argument(
+    group.add_argument(
         "-p",
         "--programming",
         action="store_true",
@@ -113,7 +121,10 @@ def bottom_toolbar():
 
 
 def interactive_session(
-    session_interactive: bool, verbosity: bool = False, programming: bool = False
+    session_interactive: bool,
+    verbosity: bool = False,
+    programming: bool = False,
+    command: bool = False,
 ):
     session = PromptSession(history=FileHistory(".litelookup_history"))
     # Set up connection pool
@@ -142,6 +153,9 @@ def interactive_session(
             if text and verbosity is True:
                 response = generate_verbose_response(text, client, redis_client)
                 print_formatted_response(response)
+            elif text and command is True:
+                response = generate_nofluff_response(text, client, redis_client)
+                print_formatted_response(response)
             elif text and programming is True:
                 response = generate_programming_response(text, client, redis_client)
                 print_formatted_response(response)
@@ -164,18 +178,31 @@ def main():
         if args.interactive:
             if args.programming:
                 logger.info("Switching to interactive programming mode...\n")
-                interactive_session(args.interactive, verbosity=False, programming=True)
+                interactive_session(
+                    args.interactive, verbosity=False, programming=True, command=False
+                )
+            elif args.command:
+                logger.info("Switching to interactive no-frills mode...\n")
+                interactive_session(
+                    args.interactive, verbosity=False, programming=False, command=True
+                )
             else:
                 match args.verbose:
                     case True:
                         logger.info("Switching to verbose interactive mode...\n")
                         interactive_session(
-                            args.interactive, verbosity=True, programming=False
+                            args.interactive,
+                            verbosity=True,
+                            programming=False,
+                            command=False,
                         )
                     case False:
                         logger.info("Switching to interactive mode...\n")
                         interactive_session(
-                            args.interactive, verbosity=False, programming=False
+                            args.interactive,
+                            verbosity=False,
+                            programming=False,
+                            command=False,
                         )
         elif args.verbose:
             logger.info("fetching verbose response...\n\n")
@@ -184,6 +211,10 @@ def main():
         elif args.programming:
             logger.info("programming mode...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
+            print_formatted_response(response)
+        elif args.command:
+            logger.info("command mode...\n\n")
+            response = generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
         else:
             logger.info("fetching response...\n\n")
