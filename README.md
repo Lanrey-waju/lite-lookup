@@ -37,7 +37,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
     Enter the API Key from [Groq](https://console.groq.com/keys) in the prompt from the first usage:
 
     `>>Enter API KEY here: your-api_key here` 
-    
+
     Replace "your_api_key_here" with the API key to begin interacting with the tool.
 
 
@@ -80,9 +80,28 @@ The responses you get with this will be slightly detailed without overwhelming y
 - `lookup -i -p` or `lookup -ip
 The responses you get with this will be more finetuned for programming. 
 
+- `lookup -i -d` or `lookup -id`
+This combines interactive mode with direct mode for quick, concise command-related answers.
+
 To exit the interactive mode, type:
 
 - `quit` or `q`
+
+### Direct Mode
+Get concise, direct answers for command-related queries:
+
+- `lookup -d "command to ..."` or `lookup --direct "how to ..."`
+
+For example, lookup -d "command to delete a file in Linux" or lookup -d "how to rollback a commit in Git"
+
+This mode provides brief, actionable responses without additional explanations. For best results, start your query with "command to" or "how to".
+
+## Flags
+
+- -p or --programming: Programming-focused responses
+- -i or --interactive: Interactive shell mode
+- -v or --verbose: Relatively detailed responses
+- -d or --direct: Concise, command-related answers
 
 ## Contributing
 If you'd like to contribute to LiteLookup, please fork the repository and submit a pull request. For any issues or suggestions, feel free to open an issue on the GitHub repository.

@@ -118,7 +118,7 @@ def generate_nofluff_response(
     concept: str, client: httpx.Client, redis_client: redis.Redis
 ) -> str:
     try:
-        cached_response = redis_client.get(concept + "_c")
+        cached_response = redis_client.get(concept + "_d")
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
@@ -130,7 +130,7 @@ def generate_nofluff_response(
                 "Sorry, there was a problem connecting to the server. Please try again"
             )
         try:
-            redis_client.set(concept + "_c", response, ex=3600)
+            redis_client.set(concept + "_d", response, ex=3600)
             return response
         except redis.RedisError as e:
             logger.error(f"Redis error: {e}")

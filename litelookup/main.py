@@ -60,8 +60,8 @@ def get_input() -> tuple[str, argparse.Namespace]:
         help="Enters a shell session for faster lookups",
     )
     group.add_argument(
-        "-c",
-        "--command",
+        "-d",
+        "--direct",
         action="store_true",
         help="returns a no-fluff response on a programming query",
     )
@@ -124,7 +124,7 @@ def interactive_session(
     session_interactive: bool,
     verbosity: bool = False,
     programming: bool = False,
-    command: bool = False,
+    direct: bool = False,
 ):
     session = PromptSession(history=FileHistory(".litelookup_history"))
     # Set up connection pool
@@ -153,7 +153,7 @@ def interactive_session(
             if text and verbosity is True:
                 response = generate_verbose_response(text, client, redis_client)
                 print_formatted_response(response)
-            elif text and command is True:
+            elif text and direct is True:
                 response = generate_nofluff_response(text, client, redis_client)
                 print_formatted_response(response)
             elif text and programming is True:
@@ -179,12 +179,12 @@ def main():
             if args.programming:
                 logger.info("Switching to interactive programming mode...\n")
                 interactive_session(
-                    args.interactive, verbosity=False, programming=True, command=False
+                    args.interactive, verbosity=False, programming=True, direct=False
                 )
-            elif args.command:
+            elif args.direct:
                 logger.info("Switching to interactive no-frills mode...\n")
                 interactive_session(
-                    args.interactive, verbosity=False, programming=False, command=True
+                    args.interactive, verbosity=False, programming=False, direct=True
                 )
             else:
                 match args.verbose:
@@ -194,7 +194,7 @@ def main():
                             args.interactive,
                             verbosity=True,
                             programming=False,
-                            command=False,
+                            direct=False,
                         )
                     case False:
                         logger.info("Switching to interactive mode...\n")
@@ -202,22 +202,22 @@ def main():
                             args.interactive,
                             verbosity=False,
                             programming=False,
-                            command=False,
+                            direct=False,
                         )
         elif args.verbose:
-            logger.info("fetching verbose response...\n\n")
+            logger.info("verbose mode...\n\n")
             response = generate_verbose_response(user_input, client, redis_client)
             print_formatted_response(response)
         elif args.programming:
             logger.info("programming mode...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
             print_formatted_response(response)
-        elif args.command:
-            logger.info("command mode...\n\n")
+        elif args.direct:
+            logger.info("direct mode...\n\n")
             response = generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
         else:
-            logger.info("fetching response...\n\n")
+            logger.info("normal mode...\n\n")
             response = generate_response(user_input, client, redis_client)
             print_formatted_response(response)
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
