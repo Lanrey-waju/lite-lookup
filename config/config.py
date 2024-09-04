@@ -3,6 +3,7 @@ from pathlib import Path
 from prompt_toolkit import prompt
 from prompt_toolkit.validation import Validator
 import configparser
+import platform
 
 
 def is_valid_APIkey(api_key: str):
@@ -17,7 +18,14 @@ validator = Validator.from_callable(
 
 
 def get_config_dir():
-    return Path(os.path.expanduser("~/.config/litelookup"))
+    system = platform.system()
+    if system == "Windows":
+        return Path(os.getenv("LOCALAPPDATA", os.path.expanduser("~"))) / "litelookup"
+    elif system in ["Linux", "Darwin"]:
+        return Path(os.path.expanduser("~/.config/litelookup"))
+    else:
+        # fallback
+        return Path(os.path.expanduser("~/.litelookup"))
 
 
 def get_user_key():

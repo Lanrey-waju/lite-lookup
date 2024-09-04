@@ -81,9 +81,10 @@ class MyJSONFormatter(logging.Formatter):
 
 
 def get_log_file_path():
-    if platform.system() == "Darwin":
+    system = platform.system()
+    if system in ["Darwin", "Linux"]:
         return Path(os.path.expanduser("~/.local/share/litelookup"))
-    if platform.system() == "Windows":
+    if system == "Windows":
         return Path(os.getenv("APPDATA")) / "litelookup"
     else:
         return Path(os.path.expanduser("~/.local/share/litelookup"))
