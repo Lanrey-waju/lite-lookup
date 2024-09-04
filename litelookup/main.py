@@ -1,5 +1,7 @@
 import argparse
 import re
+import logging
+from logging_config import setup_logging
 
 import redis
 import httpx
@@ -9,13 +11,16 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.history import FileHistory
 
-from . import log
+# from . import log
 from .responses import (
     generate_response,
     generate_programming_response,
     generate_verbose_response,
 )
 from config.config import configure_api_key, load_api_key
+
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidInputError(Exception):
@@ -33,8 +38,11 @@ class UnsupportedCharactersError(InvalidInputError):
 def get_input() -> tuple[str, argparse.Namespace]:
     parser = argparse.ArgumentParser(
         prog="LiteLookup",
-        description="""Fetches a beginner infornation about any concept you
-        want to learn about right from the comfort of your command line""",
+        description="""LiteLookup: Your lightweight command-line learning companion. 
+        Get simplified explanations about any concept, from general knowledge to 
+        programming specifics. Use -v for more detailed responses, -p for 
+        programming-focused information, and -i for an interactive shell. 
+        Perfect for quick lookups and continuous learning sessions.""",
     )
     parser.add_argument("content", nargs="*")
     parser.add_argument(
@@ -49,7 +57,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="Enters a shell session for faster lookups",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.9")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.0")
 
     parser.add_argument(
         "-p",
@@ -128,7 +136,7 @@ def interactive_session(
 
             if text.lower() in ("q", "quit", "exit"):
                 session_interactive = False
-                print("Exiting LiteLookup. Goodbye!")
+                logger.info("Exiting LiteLookup. Goodbye!")
                 break
 
             if text and verbosity is True:
@@ -143,6 +151,7 @@ def interactive_session(
 
 
 def main():
+    setup_logging()
     if load_api_key() is None:
         configure_api_key()
     try:
@@ -154,36 +163,34 @@ def main():
         user_input, args = get_input()
         if args.interactive:
             if args.programming:
-                log.logger.info("Switching to interactive programming mode...\n")
+                logger.info("Switching to interactive programming mode...\n")
                 interactive_session(args.interactive, verbosity=False, programming=True)
             else:
                 match args.verbose:
                     case True:
-                        log.logger.info("Switching to verbose interactive mode...\n")
+                        logger.info("Switching to verbose interactive mode...\n")
                         interactive_session(
                             args.interactive, verbosity=True, programming=False
                         )
                     case False:
-                        log.logger.info("Switching to interactive mode...\n")
+                        logger.info("Switching to interactive mode...\n")
                         interactive_session(
                             args.interactive, verbosity=False, programming=False
                         )
         elif args.verbose:
-            log.logger.info("fetching verbose response...\n\n")
+            logger.info("fetching verbose response...\n\n")
             response = generate_verbose_response(user_input, client, redis_client)
             print_formatted_response(response)
         elif args.programming:
-            log.logger.info("programming mode...\n\n")
+            logger.info("programming mode...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
             print_formatted_response(response)
         else:
-            log.logger.info("fetching response...\n\n")
+            logger.info("fetching response...\n\n")
             response = generate_response(user_input, client, redis_client)
             print_formatted_response(response)
     except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
-        log.logger.error(f"Invalid input: {str(e)} ")
-    # except Exception as e:
-    #     print(f"Unexpected error: {e}")
+        logger.error(f"Invalid input: {str(e)} ")
 
 
 if __name__ == "__main__":

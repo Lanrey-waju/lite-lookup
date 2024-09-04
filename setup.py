@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="litelookup",
-    version="0.1.9",
+    version="0.2.0",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,

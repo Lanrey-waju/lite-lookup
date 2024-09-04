@@ -1,7 +1,12 @@
 import redis
 import httpx
+import logging
+from logging_config import setup_logging
 
 from litelookup.llm import groq_api_call
+
+logger = logging.getLogger(__name__)
+setup_logging()
 
 
 def generate_response(
@@ -10,6 +15,7 @@ def generate_response(
     try:
         cached_response = redis_client.get(concept)
         if cached_response:
+            logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
         user_message = f"""Provide a concise, beginner-friendly explanation of '{concept}' in 3-4 sentences. Include:
     1. A clear definition
@@ -27,13 +33,13 @@ def generate_response(
             redis_client.set(concept, response, ex=3600)
             return response
         except redis.RedisError as e:
-            print(f"Redis error: {e}")
+            logger.error(f"Redis error: {e}")
             return "An error occured wjile retrieving query. Please try again"
     except redis.RedisError as e:
-        print(f"Redis error: {e}")
+        logger.error(f"Redis error: {e}")
         return "An error occured wjile retrieving query. Please try again"
     except Exception as e:
-        print(f"An unexpected error occured: {e}.")
+        logger.error(f"An unexpected error occured: {e}.")
         return "An unexpected error occured. Check your connection and retry"
 
 
@@ -43,6 +49,7 @@ def generate_verbose_response(
     try:
         cached_response = redis_client.get(f"{concept}_v")
         if cached_response:
+            logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
         user_message = f""""Provide a detailed, beginner-friendly explanation of '{concept}' in 5-6 sentences. Include:
     1. A clear definition
@@ -62,13 +69,13 @@ def generate_verbose_response(
             redis_client.set(f"{concept}_v", response, ex=3600)
             return response
         except redis.RedisError as e:
-            print(f"Redis error: {e}")
+            logger.error(f"Redis error: {e}")
             return "An error occured wjile retrieving query. Please try again"
     except redis.RedisError as e:
-        print(f"Redis error: {e}")
+        logger.error(f"Redis error: {e}")
         return "An error occured wjile retrieving query. Please try again"
     except Exception as e:
-        print(f"An unexpected error occured: {e}.")
+        logger.error(f"An unexpected error occured: {e}.")
         return "An unexpected error occured. Check your connection and retry"
 
 
@@ -78,6 +85,7 @@ def generate_programming_response(
     try:
         cached_response = redis_client.get(concept + "_p")  # Correct
         if cached_response:
+            logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
         user_message = f"""Provide a concise, practical explanation of the programming concept '{concept}' in 4-6 sentences. Include:
     1. A clear, technical definition
@@ -97,10 +105,10 @@ def generate_programming_response(
             redis_client.set(concept + "_p", response, ex=3600)
             return response
         except redis.RedisError as e:
-            print(f"Failed to cache response: {e}")
+            logger.error(f"Failed to cache response: {e}")
     except redis.RedisError as e:
-        print(f"Redis error: {e}")
+        logger.error(f"Redis error: {e}")
         return "An error occured wjile retrieving query. Please try again"
     except Exception as e:
-        print(f"An unexpected error occured: {e}.")
+        logger.error(f"An unexpected error occured: {e}.")
         return "An unexpected error occured. Check your connection and retry"

@@ -1,4 +1,6 @@
 import time
+import logging
+from logging_config import setup_logging
 
 import httpx
 from groq import APIConnectionError
@@ -7,6 +9,10 @@ from config.config import load_api_key
 
 GROQ_API_KEY = load_api_key()
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+
+logger = logging.getLogger(__name__)
+setup_logging()
 
 
 def groq_api_call(message: str, client: httpx.Client) -> str | None:
@@ -31,7 +37,7 @@ def groq_api_call(message: str, client: httpx.Client) -> str | None:
             return response.json()["choices"][0]["message"]["content"]
         except (httpx.ConnectError, httpx.TimeoutException, APIConnectionError) as e:
             if attempt == max_retries - 1:
-                print(f"Connection error occured: {e}")
+                logger.error(f"Connection error occured: {e}", exc_info=True)
             # Exponential backoff
             time.sleep(retry_delay * (2**attempt))
         except httpx.HTTPStatusError as e:
