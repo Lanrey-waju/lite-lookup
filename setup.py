@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="litelookup",
-    version="0.2.1",
+    version="0.2.3",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,
@@ -16,6 +16,8 @@ setup(
             "litelookup.tests",
         ],
     ),
+    # package_data={"litelookup": ["log/*.json"]},
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

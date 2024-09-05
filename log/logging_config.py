@@ -95,8 +95,11 @@ def setup_logging():
     log_file = log_file_path / "litelookup.log.jsonl"
 
     log_file_path.mkdir(parents=True, exist_ok=True)
-    # config_file = pathlib.Path(log_file_path / "litelookup.log.jsonl")
-    with open("log/config.json", "r") as f_in:
+
+    base_dir = Path(__file__).resolve().parent.parent
+    json_config_path = base_dir / "log" / "config.json"
+
+    with open(json_config_path, "r") as f_in:
         config = json.load(f_in)
 
     config["handlers"]["file_json"]["filename"] = log_file

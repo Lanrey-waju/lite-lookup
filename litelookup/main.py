@@ -65,7 +65,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="returns a no-fluff response on a programming query",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.1")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.3")
 
     group.add_argument(
         "-p",
