@@ -46,6 +46,7 @@ class UnsupportedCharactersError(InvalidInputError):
 #     args = parser.parse_args()
 
 #     return args
+VERSION = "0.2.4"
 
 
 def get_input() -> tuple[str, argparse.Namespace]:
@@ -77,7 +78,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="returns a no-fluff response on a programming query",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.3")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
 
     group.add_argument(
         "-p",
@@ -182,12 +183,15 @@ def interactive_session(
 def main():
     setup_logging()
     user_input, args = get_input()
-    if load_api_key() is None:
-        try:
-            configure_api_key()
-        except (KeyboardInterrupt, EOFError):
+    api_key = load_api_key()
+    if api_key is None:
+        api_key = configure_api_key()
+        if api_key is None:
+            print("API key is required to use this tool. Exiting.")
             sys.exit(1)
-
+        else:
+            print("API key configured. Please run your command again.")
+            sys.exit(0)
     try:
         client = httpx.Client(
             http2=True,

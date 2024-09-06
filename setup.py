@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
+from litelookup.main import VERSION
 
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
     name="litelookup",
-    version="0.2.3",
+    version=VERSION,
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,

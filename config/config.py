@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from prompt_toolkit import prompt
 from prompt_toolkit.validation import Validator
@@ -72,6 +73,5 @@ def configure_api_key():
             print("API key configuration cancelled.")
             return None
         if store_api_key(api_key):
-            print("API key stored successfully.")
             return api_key
         print("Error storing API key. Please try again.")
