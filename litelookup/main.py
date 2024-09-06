@@ -1,4 +1,5 @@
 import argparse
+import sys
 import re
 import logging
 from log.logging_config import setup_logging
@@ -34,6 +35,17 @@ class InputTooLongError(InvalidInputError):
 
 class UnsupportedCharactersError(InvalidInputError):
     pass
+
+
+# def get_version():
+#     parser = argparse.ArgumentParser(
+#         prog="LiteLookup Version", description="LiteLookup Version Getter"
+#     )
+
+#     parser.add_argument("--version", action="version", version="%(prog)s 0.2.3")
+#     args = parser.parse_args()
+
+#     return args
 
 
 def get_input() -> tuple[str, argparse.Namespace]:
@@ -79,7 +91,10 @@ def get_input() -> tuple[str, argparse.Namespace]:
         return "", args
 
     text = " ".join(args.content)
-    return validate_input(text, args.interactive), args
+    return (
+        validate_input(text, args.interactive),
+        args,
+    )
 
 
 def validate_input(input: str, interactive: bool) -> str:
@@ -166,15 +181,20 @@ def interactive_session(
 
 def main():
     setup_logging()
+    user_input, args = get_input()
     if load_api_key() is None:
-        configure_api_key()
+        try:
+            configure_api_key()
+        except (KeyboardInterrupt, EOFError):
+            sys.exit(1)
+
     try:
         client = httpx.Client(
             http2=True,
             limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
         )
-        redis_client = redis.Redis()
         user_input, args = get_input()
+        redis_client = redis.Redis()
         if args.interactive:
             if args.programming:
                 logger.info("Switching to interactive programming mode...\n")

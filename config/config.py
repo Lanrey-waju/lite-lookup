@@ -30,11 +30,13 @@ def get_config_dir():
 
 def get_user_key():
     print(f"Get your free API key from https://console.groq.com/keys")
-    api_key = prompt(
-        "Paste API key here: ", validator=validator, validate_while_typing=False
-    )
-    api_key = api_key.strip()
-    return api_key
+    try:
+        api_key = prompt(
+            "Paste API key here: ", validator=validator, validate_while_typing=False
+        ).strip()
+        return api_key if api_key else None
+    except (KeyboardInterrupt, EOFError):
+        return None
 
 
 def store_api_key(api_key: str):
@@ -46,9 +48,10 @@ def store_api_key(api_key: str):
         with config_file.open("w") as f:
             f.write(f"[env]\nGROQ_API_KEY={api_key}\n")
         os.chmod(config_file, 0o600)
+        return True
     except Exception as e:
         print(f"Error storing API key: {str(e)}")
-        raise
+        return False
 
 
 def load_api_key():
@@ -63,5 +66,12 @@ def load_api_key():
 
 
 def configure_api_key():
-    store_api_key(get_user_key())
-    print("API key stored successfully.")
+    while True:
+        api_key = get_user_key()
+        if api_key is None:
+            print("API key configuration cancelled.")
+            return None
+        if store_api_key(api_key):
+            print("API key stored successfully.")
+            return api_key
+        print("Error storing API key. Please try again.")
