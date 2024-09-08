@@ -37,18 +37,6 @@ class UnsupportedCharactersError(InvalidInputError):
     pass
 
 
-# def get_version():
-#     parser = argparse.ArgumentParser(
-#         prog="LiteLookup Version", description="LiteLookup Version Getter"
-#     )
-
-#     parser.add_argument("--version", action="version", version="%(prog)s 0.2.3")
-#     args = parser.parse_args()
-
-#     return args
-VERSION = "0.2.4"
-
-
 def get_input() -> tuple[str, argparse.Namespace]:
     parser = argparse.ArgumentParser(
         prog="LiteLookup",
@@ -78,7 +66,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="returns a no-fluff response on a programming query",
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.4")
 
     group.add_argument(
         "-p",

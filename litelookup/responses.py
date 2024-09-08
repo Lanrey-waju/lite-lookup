@@ -91,7 +91,7 @@ def generate_programming_response(
     1. A clear, technical definition
     2. Its primary use case or significance in programming
     3. A brief, illustrative code example (if applicable)
-    4. One common pitfall or best practice
+    4. One common pitfall or best practice (if applicable)
 
     Begin your response immediately without any preamble. Focus on practical application. Separate code examples from body of text. If relevant, mention the programming language(s) where this concept is most commonly used.
     Be direct and concise. Do not hallucinate.
