@@ -17,13 +17,15 @@ def generate_response(
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
-        user_message = f"""Provide a concise, beginner-friendly explanation of '{concept}' in 3-4 sentences. Include:
-    1. A clear definition
-    2. Its primary significance or use
-    3. One key fact or example (if relevant)
+        user_message = f"""Provide a concise, beginner-friendly explanation of '{concept}' in 3-5 sentences. Include:
+            1. A clear definition or explanation of the main idea
+            2. Its primary significance or use
+            3. One key fact or example (if relevant)
 
-    Begin your response immediately without any preamble. Do not hallucinate.
-    """
+            If the query includes additional context or is more complex than a single term, incorporate this information into your response.
+
+            Begin your response immediately without any preamble. Stick to verified information and avoid speculation.
+        """
         response = groq_api_call(user_message, client)
         if response is None:
             return (
