@@ -23,7 +23,7 @@ def groq_api_call(message: str, client: httpx.Client) -> str | None:
     data = {
         "model": "llama3-8b-8192",
         "messages": [{"role": "user", "content": message}],
-        "max_tokens": 300,
+        "max_tokens": 400,
         "temperature": 0.7,
     }
 

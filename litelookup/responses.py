@@ -17,14 +17,16 @@ def generate_response(
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
-        user_message = f"""Provide a concise, beginner-friendly explanation of '{concept}' in 3-5 sentences. Include:
-            1. A clear definition or explanation of the main idea
-            2. Its primary significance or use
-            3. One key fact or example (if relevant)
+        user_message = f"""Provide a concise, valuable, beginner-friendly response to the query: '{concept}'
+        Your response should:
+        1. Directly address the main point
+        2. Offer key information or steps if applicable
+        3. Be immediately useful without unnecessary background
 
-            If the query includes additional context or is more complex than a single term, incorporate this information into your response.
+        Adapt your response style to the query type (definition, process, comparison, etc.).
+        Aim for clarity and brevity. Avoid speculation.
 
-            Begin your response immediately without any preamble. Stick to verified information and avoid speculation.
+        Begin your response immediately without preamble.
         """
         response = groq_api_call(user_message, client)
         if response is None:
@@ -53,7 +55,7 @@ def generate_verbose_response(
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
-        user_message = f""""Provide a detailed, beginner-friendly explanation of '{concept}' in 5-6 sentences. Include:
+        user_message = f""""Provide a detailed, beginner-friendly explanation of the query: '{concept}' in 5-6 sentences. Include:
     1. A clear definition
     2. Its primary significance or use
     3. Two key facts or examples
@@ -89,15 +91,15 @@ def generate_programming_response(
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
-        user_message = f"""Provide a concise, practical explanation of the programming concept '{concept}' in 4-6 sentences. Include:
-    1. A clear, technical definition
-    2. Its primary use case or significance in programming
-    3. A brief, illustrative code example (if applicable)
-    4. One common pitfall or best practice (if applicable)
+        user_message = f"""Respond to query: '{concept}' in programming context:
+        1. Technical definition (1-2 sentences)
+        2. Primary use case (1 sentence)
+        3. Code example with brief, clear explanation
+        4. Key pitfall or best practice (1 sentence amd only if applicable)
 
-    Begin your response immediately without any preamble. Focus on practical application. Separate code examples from body of text. If relevant, mention the programming language(s) where this concept is most commonly used.
-    Be direct and concise. Do not hallucinate.
-    """
+        Always include code with explanation.
+        If requested for specific info, focus solely on that.
+        Use code blocks for examples. No preamble. Be concise yet comprehensive."""
         response = groq_api_call(user_message, client)
         if response is None:
             return (
@@ -124,8 +126,7 @@ def generate_nofluff_response(
         if cached_response:
             logger.info("Got a cached response\n")
             return cached_response.decode("utf-8")
-        user_message = f""""Provide a crisp, 1-2 sentence response that directly answers the query: {concept}. Do not include any additional explanation or context - just the essential information needed to address the request."
-    """
+        user_message = f"""Directly answer "{concept}" in 1-2 crisp sentences. Include only essential information. Adapt to query type (definition, step, fact, etc.) without explanation."""
         response = groq_api_call(user_message, client)
         if response is None:
             return (
