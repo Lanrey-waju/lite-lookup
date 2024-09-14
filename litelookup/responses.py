@@ -57,17 +57,17 @@ def generate_programming_response(
             return cached_response.decode("utf-8")
         user_message = f"""Provide a concise yet comprehensive answer to the following programming question: '{concept}'
 
-Guidelines:
-1. Begin with the most relevant information directly addressing the question.
-2. Offer a brief technical explanation (2-3 sentences).
-3. List key points using numbers, covering:
-   a. Basic concept or implementation
-   b. Common variations or options
-   c. Use cases or best practices
-4. Include short, relevant code examples where applicable.
-5. Mention a best practice or common pitfall if relevant.
+        Guidelines:
+        1. Begin with the most relevant information directly addressing the question.
+        2. Offer a brief technical explanation (2-3 sentences).
+        3. List key points using numbers, covering:
+           a. Basic concept or implementation
+           b. Common variations or options
+           c. Use cases or best practices
+        4. Include short, relevant code examples where applicable.
+        5. Mention a best practice or common pitfall if relevant.
 
-Use Markdown for code blocks. Be direct and avoid unnecessary preambles, question repetition, or filler phrases. Focus solely on the specific information requested.
+        Use Markdown for code blocks. Be direct and avoid unnecessary preambles, question repetition, or filler phrases. Focus solely on the specific information requested.
         """
         response = groq_api_call(user_message, client)
         if response is None:
