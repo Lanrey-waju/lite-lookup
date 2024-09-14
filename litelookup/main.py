@@ -191,13 +191,13 @@ def main():
                     programming=False,
                     direct=True,
                 )
-            # else:
-            #     logger.info("Switching to interactive mode...\n")
-            #     interactive_session(
-            #         args.interactive,
-            #         programming=False,
-            #         direct=False,
-            #     )
+            else:
+                logger.info("Switching to interactive mode...\n")
+                interactive_session(
+                    args.interactive,
+                    programming=False,
+                    direct=False,
+                )
         elif args.programming:
             logger.info("programming mode...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
