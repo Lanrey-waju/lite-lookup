@@ -2,23 +2,22 @@ import argparse
 import sys
 import re
 import logging
-from log.logging_config import setup_logging
 
 import redis
 import httpx
-from rich.padding import Padding
 from rich import print
 from prompt_toolkit import PromptSession
-from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.history import FileHistory
 
-# from . import log
 from .responses import (
     generate_response,
     generate_programming_response,
     generate_nofluff_response,
 )
+from log.logging_config import setup_logging
 from config.config import configure_api_key, load_api_key
+from .chat import start_conversation_session
+from .format import print_formatted_response, normal_bottom_toolbar
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +57,12 @@ def get_input() -> tuple[str, argparse.Namespace]:
         "--direct",
         action="store_true",
         help="returns a no-fluff response on a programming query",
+    )
+    group.add_argument(
+        "-c",
+        "--chat",
+        action="store_true",
+        help="enters a conversational mode to brainstorm ideas",
     )
     parser.add_argument("--version", action="version", version="%(prog)s 0.2.4")
 
@@ -106,34 +111,37 @@ def validate_input(input: str, interactive: bool) -> str:
     return input.lower().strip()
 
 
-def print_formatted_response(response: str):
-    output = Padding(response, (1, 1), style="green", expand=False)
-    print(output)
-
-
-def bottom_toolbar():
-    return HTML(
-        ' Press <i>"q", "quit", or "exit"</i> to <style bg="ansired">quit</style> <b>litelookup</b>'
-    )
-
-
 def interactive_session(
+    session_interactive: bool,
+    chat: bool = False,
+    direct: bool = False,
+    programming: bool = False,
+):
+    if chat is True:
+        return start_conversation_session()
+    else:
+        return start_normal_session(
+            session_interactive=session_interactive,
+            direct=direct,
+            programming=programming,
+        )
+
+
+def start_normal_session(
     session_interactive: bool,
     programming: bool = False,
     direct: bool = False,
 ):
     session = PromptSession(history=FileHistory(".litelookup_history"))
-    # Set up connection pool
     with httpx.Client(
         http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
     ) as client:
         # Set up Redis connection
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
-
         while session_interactive:
             try:
                 user_input = session.prompt(
-                    ">> lookup: ", bottom_toolbar=bottom_toolbar
+                    ">> lookup: ", bottom_toolbar=normal_bottom_toolbar
                 ).strip()
             except KeyboardInterrupt:
                 continue
@@ -145,7 +153,6 @@ def interactive_session(
                 session_interactive = False
                 logger.info("Exiting LiteLookup. Goodbye!")
                 break
-
             if text and direct is True:
                 response = generate_nofluff_response(text, client, redis_client)
                 print_formatted_response(response)
@@ -182,15 +189,16 @@ def main():
                 interactive_session(
                     args.interactive,
                     programming=True,
-                    direct=False,
                 )
             elif args.direct:
                 logger.info("Switching to interactive no-frills mode...\n")
                 interactive_session(
                     args.interactive,
-                    programming=False,
                     direct=True,
                 )
+            elif args.chat:
+                logger.info("conversational mode...\n\n")
+                interactive_session(args.interactive, chat=True)
             else:
                 logger.info("Switching to interactive mode...\n")
                 interactive_session(
