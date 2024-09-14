@@ -64,7 +64,7 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="enters a conversational mode to brainstorm ideas",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.4")
+    parser.add_argument("--version", action="version", version="%(prog)s 0.2.5")
 
     group.add_argument(
         "-p",

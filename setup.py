@@ -3,9 +3,16 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
+with open("requirements.txt", "r") as req_file:
+    dependencies = []
+    lines = req_file.readlines()
+    for line in lines:
+        line = line.strip("\n")
+        dependencies.append(line)
+
 setup(
     name="litelookup",
-    version="0.2.4",
+    version="0.2.5",
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,
@@ -23,15 +30,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        "groq",
-        "redis",
-        "pytest",
-        "python-dotenv",
-        "httpx[http2]",
-        "prompt_toolkit",
-        "rich",
-    ],
+    install_requires=dependencies,
     entry_points={
         "console_scripts": [
             "lookup=litelookup.main:main",
