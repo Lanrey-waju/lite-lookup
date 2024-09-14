@@ -11,7 +11,6 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 - **API Integration:** Utilizes the Groq LLM API to generate concise explanations of the concepts provided.
 - **Caching:** Implements Redis for persistent caching of API responses, reducing unnecessary API calls and improving response times.
 - **Interactive Shell Session:** Launches an intractive shell for faster, continuous lookups after the initial connection establishment. This mode is ideal for making multiple queries in a single session without the overhead of reconnecting for each request.
-- **Verbose Mode:** Use the `-v` flag for more detailed explanations, including examples or code snippets when applicable.
 - **HTTP/2 Support:** Uses `httpx` with connection pooling and HTTP/2 for efficient API communication.
 - **Expandable:** Designed to be easily extended with new features and enhancements.
 
@@ -56,11 +55,6 @@ To fetch information about a concept, use the following command:
 
 For example, `lookup "git rebase"`
 
-### Verbose Mode
-For a more detailed response, including examples or code snippets:
-
-`lookup "git rebase" -v'
-
 ### Programming Mode
 
 lookup "programming concept" -p
@@ -73,9 +67,6 @@ Enter the interactive mode for continuous lookups without reconnecting:
 - `lookup -i`
 
 If you wish to generate verbose responses while in the interactive mode, use
-
-- `lookup -i -v` or `lookup -iv`
-The responses you get with this will be slightly detailed without overwhelming you. 
 
 - `lookup -i -p` or `lookup -ip
 The responses you get with this will be more finetuned for programming. 
@@ -100,7 +91,6 @@ This mode provides brief, actionable responses without additional explanations. 
 
 - -p or --programming: Programming-focused responses
 - -i or --interactive: Interactive shell mode
-- -v or --verbose: Relatively detailed responses
 - -d or --direct: Concise, command-related answers
 
 ## Contributing

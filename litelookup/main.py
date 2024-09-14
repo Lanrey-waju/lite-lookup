@@ -16,7 +16,6 @@ from prompt_toolkit.history import FileHistory
 from .responses import (
     generate_response,
     generate_programming_response,
-    generate_verbose_response,
     generate_nofluff_response,
 )
 from config.config import configure_api_key, load_api_key
@@ -48,12 +47,6 @@ def get_input() -> tuple[str, argparse.Namespace]:
     )
     group = parser.add_mutually_exclusive_group()
     parser.add_argument("content", nargs="*")
-    group.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="provides a detailed accessible information on the arguments passed",
-    )
     parser.add_argument(
         "-i",
         "--interactive",
@@ -126,7 +119,6 @@ def bottom_toolbar():
 
 def interactive_session(
     session_interactive: bool,
-    verbosity: bool = False,
     programming: bool = False,
     direct: bool = False,
 ):
@@ -154,10 +146,7 @@ def interactive_session(
                 logger.info("Exiting LiteLookup. Goodbye!")
                 break
 
-            if text and verbosity is True:
-                response = generate_verbose_response(text, client, redis_client)
-                print_formatted_response(response)
-            elif text and direct is True:
+            if text and direct is True:
                 response = generate_nofluff_response(text, client, redis_client)
                 print_formatted_response(response)
             elif text and programming is True:
@@ -191,35 +180,24 @@ def main():
             if args.programming:
                 logger.info("Switching to interactive programming mode...\n")
                 interactive_session(
-                    args.interactive, verbosity=False, programming=True, direct=False
+                    args.interactive,
+                    programming=True,
+                    direct=False,
                 )
             elif args.direct:
                 logger.info("Switching to interactive no-frills mode...\n")
                 interactive_session(
-                    args.interactive, verbosity=False, programming=False, direct=True
+                    args.interactive,
+                    programming=False,
+                    direct=True,
                 )
-            else:
-                match args.verbose:
-                    case True:
-                        logger.info("Switching to verbose interactive mode...\n")
-                        interactive_session(
-                            args.interactive,
-                            verbosity=True,
-                            programming=False,
-                            direct=False,
-                        )
-                    case False:
-                        logger.info("Switching to interactive mode...\n")
-                        interactive_session(
-                            args.interactive,
-                            verbosity=False,
-                            programming=False,
-                            direct=False,
-                        )
-        elif args.verbose:
-            logger.info("verbose mode...\n\n")
-            response = generate_verbose_response(user_input, client, redis_client)
-            print_formatted_response(response)
+            # else:
+            #     logger.info("Switching to interactive mode...\n")
+            #     interactive_session(
+            #         args.interactive,
+            #         programming=False,
+            #         direct=False,
+            #     )
         elif args.programming:
             logger.info("programming mode...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
