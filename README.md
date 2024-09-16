@@ -87,11 +87,19 @@ For example, lookup -d "command to delete a file in Linux" or lookup -d "how to 
 
 This mode provides brief, actionable responses without additional explanations. For best results, start your query with "command to" or "how to".
 
+### Conversational or Chat Mode
+Get conversational with the tool! LiteLookup offers a chat feature that allows you to go back and forth with it on an idea. To toggle this mode, use:
+
+`lookup -ic`
+
+Now you have a terminal buddy to brainstorm with.
+
 ## Flags
 
 - -p or --programming: Programming-focused responses
 - -i or --interactive: Interactive shell mode
 - -d or --direct: Concise, command-related answers
+- -ic or --interactive --chat: conversational mode
 
 ## Contributing
 If you'd like to contribute to LiteLookup, please fork the repository and submit a pull request. For any issues or suggestions, feel free to open an issue on the GitHub repository.
