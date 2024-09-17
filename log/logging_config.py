@@ -6,8 +6,8 @@ from pathlib import Path
 import atexit
 from typing import override
 import logging.handlers
-import os
-import platform
+
+from config.directory import get_app_directory
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -80,18 +80,8 @@ class MyJSONFormatter(logging.Formatter):
         return message
 
 
-def get_log_file_path():
-    system = platform.system()
-    if system in ["Darwin", "Linux"]:
-        return Path(os.path.expanduser("~/.local/share/litelookup"))
-    if system == "Windows":
-        return Path(os.getenv("APPDATA")) / "litelookup"
-    else:
-        return Path(os.path.expanduser("~/.local/share/litelookup"))
-
-
 def setup_logging():
-    log_file_path = get_log_file_path()
+    log_file_path = get_app_directory()
     log_file = log_file_path / "litelookup.log.jsonl"
 
     log_file_path.mkdir(parents=True, exist_ok=True)

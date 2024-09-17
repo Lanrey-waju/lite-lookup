@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 from prompt_toolkit import prompt
 from prompt_toolkit.validation import Validator

@@ -18,6 +18,7 @@ from log.logging_config import setup_logging
 from config.config import configure_api_key, load_api_key
 from .chat import start_conversation_session
 from .format import print_formatted_response, normal_bottom_toolbar
+from config.directory import history_file
 
 
 logger = logging.getLogger(__name__)
@@ -132,7 +133,7 @@ def start_normal_session(
     programming: bool = False,
     direct: bool = False,
 ):
-    session = PromptSession(history=FileHistory(".litelookup_history"))
+    session = PromptSession(history=FileHistory(str(history_file)))
     with httpx.Client(
         http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
     ) as client:

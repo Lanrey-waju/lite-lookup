@@ -13,6 +13,8 @@ from prompt_toolkit.history import FileHistory
 from config.config import load_api_key
 from .format import print_formatted_response, chat_bottom_toolbar
 
+from config.directory import history_file
+
 
 GROQ_API_KEY = load_api_key()
 
@@ -33,7 +35,7 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 
 def start_conversation_session():
-    session = PromptSession(history=FileHistory(".litelookup_history"))
+    session = PromptSession(history=FileHistory(str(history_file)))
 
     model = "llama3-8b-8192"
 
