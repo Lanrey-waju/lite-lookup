@@ -1,3 +1,4 @@
+from pathlib import Path
 from setuptools import setup, find_packages
 
 with open("README.md", "r", encoding="utf-8") as f:
@@ -10,9 +11,12 @@ with open("requirements.txt", "r") as req_file:
         line = line.strip("\n")
         dependencies.append(line)
 
+here = Path(__file__).resolve().parent
+VERSION = (here / "VERSION").read_text(encoding="utf-8").strip()
+
 setup(
     name="litelookup",
-    version="0.2.5",
+    version=VERSION,
     author="Abdulmumin Akinde",
     description="A command line tool for quick concept lookups",
     long_description=long_description,

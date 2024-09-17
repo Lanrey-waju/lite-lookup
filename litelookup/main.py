@@ -19,7 +19,7 @@ from config.config import configure_api_key, load_api_key
 from .chat import start_conversation_session
 from .format import print_formatted_response, normal_bottom_toolbar
 from config.directory import history_file
-
+from . import VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +39,13 @@ class UnsupportedCharactersError(InvalidInputError):
 def get_input() -> tuple[str, argparse.Namespace]:
     parser = argparse.ArgumentParser(
         prog="LiteLookup",
-        description="""LiteLookup: Your lightweight command-line learning companion. 
+        description=f"""LiteLookup: Your lightweight command-line learning companion. 
         Get simplified explanations about any concept, from general knowledge to 
         programming specifics. Use -v for more detailed responses, -p for 
         programming-focused information, and -i for an interactive shell. 
-        Perfect for quick lookups and continuous learning sessions.""",
+        Perfect for quick lookups and continuous learning sessions.
+        
+        version — {VERSION} """,
     )
     group = parser.add_mutually_exclusive_group()
     parser.add_argument("content", nargs="*")
@@ -65,7 +67,9 @@ def get_input() -> tuple[str, argparse.Namespace]:
         action="store_true",
         help="enters a conversational mode to brainstorm ideas",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.2.5")
+    parser.add_argument(
+        "--version", action="version", version=f"{parser.prog} {VERSION}"
+    )
 
     group.add_argument(
         "-p",

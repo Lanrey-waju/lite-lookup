@@ -1,2 +1,3 @@
 include log/*.json
 include requirements.txt
+include VERSION
