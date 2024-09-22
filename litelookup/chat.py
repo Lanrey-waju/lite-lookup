@@ -1,3 +1,6 @@
+import asyncio
+import time
+
 from langchain.chains import LLMChain
 from langchain_core.prompts import (
     ChatPromptTemplate,
@@ -8,6 +11,7 @@ from langchain_core.messages import SystemMessage
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
+from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.history import FileHistory
 
 from config.config import load_api_key
@@ -34,7 +38,7 @@ You are a friendly, helpful, and knowledgeable conversational assistant. Your go
 Remember, your aim is to make information as accessible as possible while engaging in a natural, helpful conversation."""
 
 
-def start_conversation_session():
+async def start_conversation_session():
     session = PromptSession(history=FileHistory(str(history_file)))
 
     model = "llama3-8b-8192"
@@ -47,11 +51,27 @@ def start_conversation_session():
     memory = ConversationBufferWindowMemory(
         k=conversational_memory_length, memory_key="chat_history", return_messages=True
     )
+    session_interactive = True
+    session_timeout = 3600  # 1 hour in seconds
+    last_activity = time.time()
 
-    while True:
+    while session_interactive:
+        current_time = time.time()
+
+        if current_time - last_activity > session_timeout:
+            print("Session timed out due to inactivity")
+            break
         try:
-            user_question = session.prompt(">> ", bottom_toolbar=chat_bottom_toolbar)
+            with patch_stdout():
+                user_question = await asyncio.wait_for(
+                    session.prompt_async(">> ", bottom_toolbar=chat_bottom_toolbar),
+                    timeout=session_timeout,
+                )
+            last_activity = time.time()
         except (KeyboardInterrupt, EOFError):
+            break
+        except asyncio.TimeoutError:
+            print("\nSession timed out due to inactivity")
             break
 
         if user_question and user_question == "q":
