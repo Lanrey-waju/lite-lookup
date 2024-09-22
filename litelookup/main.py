@@ -2,11 +2,14 @@ import argparse
 import sys
 import re
 import logging
+import time
+import asyncio
 
 import redis
 import httpx
 from rich import print
 from prompt_toolkit import PromptSession
+from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.history import FileHistory
 
 from .responses import (
@@ -122,6 +125,7 @@ def interactive_session(
     direct: bool = False,
     programming: bool = False,
 ):
+
     if chat is True:
         return start_conversation_session()
     else:
@@ -132,32 +136,45 @@ def interactive_session(
         )
 
 
-def start_normal_session(
+async def start_normal_session(
     session_interactive: bool,
     programming: bool = False,
     direct: bool = False,
 ):
-    session = PromptSession(history=FileHistory(str(history_file)))
+    session = PromptSession(mouse_support=True, history=FileHistory(str(history_file)))
     with httpx.Client(
         http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
     ) as client:
         # Set up Redis connection
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
+
+        session_timeout = 3600  # 1 hour in seconds
+
         while session_interactive:
             try:
-                user_input = session.prompt(
-                    ">> lookup: ", bottom_toolbar=normal_bottom_toolbar
-                ).strip()
+                with patch_stdout():
+                    user_input = await asyncio.wait_for(
+                        session.prompt_async(
+                            ">> lookup: ",
+                            bottom_toolbar=normal_bottom_toolbar,
+                        ),
+                        timeout=session_timeout,
+                    )
             except KeyboardInterrupt:
                 continue
             except EOFError:
                 break
+            except asyncio.TimeoutError:
+                logger.info("Session timed out due to inactivity")
+                break
+
             text = validate_input(user_input, session_interactive)
 
             if text.lower() in ("q", "quit", "exit"):
                 session_interactive = False
                 logger.info("Exiting LiteLookup. Goodbye!")
                 break
+
             if text and direct is True:
                 response = generate_nofluff_response(text, client, redis_client)
                 print_formatted_response(response)
@@ -195,15 +212,17 @@ def main():
                     args.interactive,
                     programming=True,
                 )
+            elif args.chat:
+                logger.info("Switching to conversational mode...\n\n")
+                asyncio.run(interactive_session(args.interactive, chat=True))
             elif args.direct:
                 logger.info("Switching to interactive no-frills mode...\n")
-                interactive_session(
-                    args.interactive,
-                    direct=True,
+                asyncio.run(
+                    interactive_session(
+                        args.interactive,
+                        direct=True,
+                    )
                 )
-            elif args.chat:
-                logger.info("conversational mode...\n\n")
-                interactive_session(args.interactive, chat=True)
             else:
                 logger.info("Switching to interactive mode...\n")
                 interactive_session(
