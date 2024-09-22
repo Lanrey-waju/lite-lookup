@@ -1,5 +1,6 @@
 import asyncio
 import time
+import logging
 
 from langchain.chains import LLMChain
 from langchain_core.prompts import (
@@ -16,9 +17,13 @@ from prompt_toolkit.history import FileHistory
 
 from config.config import load_api_key
 from .format import print_formatted_response, chat_bottom_toolbar
+from log.logging_config import setup_logging
 
 from config.directory import history_file
 
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 GROQ_API_KEY = load_api_key()
 
@@ -53,25 +58,19 @@ async def start_conversation_session():
     )
     session_interactive = True
     session_timeout = 3600  # 1 hour in seconds
-    last_activity = time.time()
 
     while session_interactive:
-        current_time = time.time()
 
-        if current_time - last_activity > session_timeout:
-            print("Session timed out due to inactivity")
-            break
         try:
             with patch_stdout():
                 user_question = await asyncio.wait_for(
                     session.prompt_async(">> ", bottom_toolbar=chat_bottom_toolbar),
                     timeout=session_timeout,
                 )
-            last_activity = time.time()
         except (KeyboardInterrupt, EOFError):
             break
         except asyncio.TimeoutError:
-            print("\nSession timed out due to inactivity")
+            logger.info("Session timed out due to inactivity")
             break
 
         if user_question and user_question == "q":

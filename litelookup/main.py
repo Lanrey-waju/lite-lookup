@@ -148,15 +148,9 @@ async def start_normal_session(
         # Set up Redis connection
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
 
-        session_timeout = 3600  # time in seconds
-        last_activity = time.time()
+        session_timeout = 3600  # 1 hour in seconds
 
         while session_interactive:
-            current_time = time.time()
-
-            if current_time - last_activity > session_timeout:
-                print("Session timed out due to inctivity")
-                break
             try:
                 with patch_stdout():
                     user_input = await asyncio.wait_for(
@@ -166,13 +160,12 @@ async def start_normal_session(
                         ),
                         timeout=session_timeout,
                     )
-                last_activity = time.time()
             except KeyboardInterrupt:
                 continue
             except EOFError:
                 break
             except asyncio.TimeoutError:
-                logger.info("\nSession timed out due to inactivity")
+                logger.info("Session timed out due to inactivity")
                 break
 
             text = validate_input(user_input, session_interactive)
