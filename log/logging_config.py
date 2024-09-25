@@ -4,7 +4,6 @@ import logging
 import datetime as dt
 from pathlib import Path
 import atexit
-from typing import override
 import logging.handlers
 
 from config.directory import get_app_directory
@@ -34,6 +33,10 @@ LOG_RECORD_BUILTIN_ATTRS = {
     "threadName",
     "taskName",
 }
+
+
+def override(method):
+    return method
 
 
 class MyJSONFormatter(logging.Formatter):
