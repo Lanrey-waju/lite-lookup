@@ -32,10 +32,14 @@ def test_validate_input_too_long():
     with pytest.raises(InputTooLongError) as e:
         validate_input(
             "This is a very long test input that exceeds the acceptable \
-                length and should raise an InputTooLongError ",
+                length and should raise an InputTooLongError. This is a very long test input that exceeds the acceptable \
+                length and should raise an InputTooLongError",
             False,
         )
-    assert str(e.value) == "Text input too long. Consider shortening."
+    assert (
+        str(e.value)
+        == "Text cannot be more than 150 characters long. Consider shortening."
+    )
 
 
 def test_validate_unsupported_input_chars():

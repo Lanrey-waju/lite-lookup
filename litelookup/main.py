@@ -44,9 +44,8 @@ def get_input() -> tuple[str, argparse.Namespace]:
         prog="LiteLookup",
         description=f"""LiteLookup: Your lightweight command-line learning companion. 
         Get simplified explanations about any concept, from general knowledge to 
-        programming specifics. Use -v for more detailed responses, -p for 
-        programming-focused information, and -i for an interactive shell. 
-        Perfect for quick lookups and continuous learning sessions.
+        programming specifics. Use -p for programming-focused information,
+        and -i for an interactive shell. Perfect for quick lookups and continuous learning sessions.
         
         version — {VERSION} """,
     )
@@ -98,8 +97,10 @@ def validate_input(input: str, interactive: bool) -> str:
             "Input cannot be empty. Please provide a concept to check"
         )
 
-    if len(input) > 100:
-        raise InputTooLongError("Text input too long. Consider shortening.")
+    if len(input) > 150:
+        raise InputTooLongError(
+            "Text cannot be more than 150 characters long. Consider shortening."
+        )
 
     # Validate content inside the quotes
     if not re.fullmatch(r"[a-zA-Z0-9\s.,\")(q';:!?-]+", input):
