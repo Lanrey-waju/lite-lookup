@@ -18,7 +18,7 @@ LiteLookup is a command-line tool developed in Python that fetches beginner-leve
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.11 or higher
 - Redis server installed and running
 - Groq LLM API access — You will need to store a valid Groq API Key as a secret. You can generate one for free [here](https://console.groq.com/keys).
 
@@ -54,6 +54,8 @@ To fetch information about a concept, use the following command:
 `lookup "concept"`
 
 For example, `lookup "git rebase"`
+
+For queries with special characters (such as '&', '|', '\', etc), please make sure to wrap your queries in quotes. Otherwise, the shell may interprete these characters.
 
 ### Programming Mode
 
@@ -97,8 +99,8 @@ Now you have a terminal buddy to brainstorm with.
 ## Flags
 
 - -p or --programming: Programming-focused responses
-- -i or --interactive: Interactive shell mode
 - -d or --direct: Concise, command-related answers
+- -i or --interactive: Interactive shell mode
 - -ic or --interactive --chat: conversational mode
 
 ## Contributing
