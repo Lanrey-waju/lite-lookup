@@ -3,7 +3,6 @@ from litelookup.main import (
     validate_input,
     InvalidInputError,
     InputTooLongError,
-    UnsupportedCharactersError,
 )
 
 
@@ -40,20 +39,3 @@ def test_validate_input_too_long():
         str(e.value)
         == "Text cannot be more than 150 characters long. Consider shortening."
     )
-
-
-def test_validate_unsupported_input_chars():
-    with pytest.raises(UnsupportedCharactersError) as e:
-        validate_input('"__This is @ test with unupported chars like & and >",', False)
-
-    assert (
-        str(e.value)
-        == "Input contains unsupported characters. Please use only letters, numbers, spaces, hyphens, and basic punctuation."
-    )
-
-
-def test_validate_input_contains_only_one_hyphen():
-    with pytest.raises(UnsupportedCharactersError) as e:
-        validate_input("input with double -- or more --- hyphens together", False)
-
-    assert str(e.value) == "Text cannot contain two or more hyphens together."

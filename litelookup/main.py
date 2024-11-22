@@ -35,10 +35,6 @@ class InputTooLongError(InvalidInputError):
     pass
 
 
-class UnsupportedCharactersError(InvalidInputError):
-    pass
-
-
 def get_input() -> tuple[str, argparse.Namespace]:
     parser = argparse.ArgumentParser(
         prog="LiteLookup",
@@ -102,11 +98,6 @@ def validate_input(input: str, interactive: bool) -> str:
             "Text cannot be more than 150 characters long. Consider shortening."
         )
 
-    # Validate content inside the quotes
-    if not re.fullmatch(r"[a-zA-Z0-9\s.,\")(q';:!?-]+", input):
-        raise UnsupportedCharactersError(
-            "Input contains unsupported characters. Please use only letters, numbers, spaces, hyphens, and basic punctuation."
-        )
     # Input cannot contain two or more hyphens together
     if re.search(r"[-]{2,}", input):
         raise UnsupportedCharactersError(
