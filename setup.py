@@ -11,7 +11,7 @@ with open("requirements.txt", "r") as req_file:
         line = line.strip("\n")
         dependencies.append(line)
 
-here = Path(__file__).resolve().parent
+here = Path(".").resolve()
 VERSION = (here / "VERSION").read_text(encoding="utf-8").strip()
 
 setup(
