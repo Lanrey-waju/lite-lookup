@@ -39,7 +39,7 @@ jobs:
           ./scripts/chlog.sh
           echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
         env:
-          ITHUB_WORKSPACE: ${{ github.workspace }}
+          GTHUB_WORKSPACE: ${{ github.workspace }}
 
       - name: Debug setup.py
         run: cat setup.py
