@@ -33,16 +33,19 @@ jobs:
       - name: Run tests
         run: pytest tests/
 
-      - name: Generate CHANGELOG
+      - name: Generate CHANGELOG and Set Version
         run: |
           chmod +x scripts/chlog.sh
-          scripts/chlog.sh
+          ./scripts/chlog.sh
+          echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+
+      - name: Debug setup.py
+        run: cat setup.py
 
       - name: Install Twine
         run: python -m pip install twine
-
-      - name: Install setuptools
-        run: pip install setuptools
 
       - name: Build package
         run: python setup.py sdist bdist_wheel
