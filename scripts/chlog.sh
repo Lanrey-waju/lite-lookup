@@ -31,6 +31,7 @@ else
 fi
 
 CURRENT_VERSION=$LAST_VERSION
+version="$CURRENT_VERSION" 
 VERSION_LOG=""
 
 CHANGE_KEYS=() # Array for keys (version,category)
@@ -85,7 +86,6 @@ done < <(git log --pretty=format:"%s (%ad)" --date=short --reverse)
 } >> "$CHANGELOG_FILE"
 
 # Set the version in the VERSION file and update __init__.py and setup.py
-export version="$version"
 echo "$version" > "VERSION"
 echo "VERSION = \"$version\"" > "litelookup/__init__.py"
 awk -v ver="$version" 'NR==3 {$0="version = \"" ver "\""} 1' setup.py > temp.py && mv temp.py setup.py
