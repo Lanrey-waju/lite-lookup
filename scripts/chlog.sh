@@ -31,7 +31,6 @@ else
 fi
 
 CURRENT_VERSION=$LAST_VERSION
-version="$CURRENT_VERSION" 
 VERSION_LOG=""
 
 CHANGE_KEYS=() # Array for keys (version,category)
@@ -84,6 +83,8 @@ done < <(git log --pretty=format:"%s (%ad)" --date=short --reverse)
   done
   echo "" # Ensure there's a newline at the end.
 } >> "$CHANGELOG_FILE"
+
+version="$CURRENT_VERSION"
 
 # Set the version in the VERSION file and update __init__.py and setup.py
 echo "$version" > "VERSION"
