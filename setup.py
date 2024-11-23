@@ -11,6 +11,8 @@ with open("requirements.txt", "r") as req_file:
         line = line.strip("\n")
         dependencies.append(line)
 
+print(f"Version being used: {version}")
+
 setup(
     name="litelookup",
     version=version,
