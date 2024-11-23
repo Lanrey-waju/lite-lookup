@@ -86,5 +86,6 @@ done < <(git log --pretty=format:"%s (%ad)" --date=short --reverse)
 
 echo "$version" > "VERSION"
 echo "VERSION = \"$version\"" > "litelookup/__init__.py"
+awk -v ver="$version" 'NR==3 {$0="version = \"" ver "\""} 1' setup.py > temp.py && mv temp.py setup.py
 
 echo "CHANGELOG.md updated."
