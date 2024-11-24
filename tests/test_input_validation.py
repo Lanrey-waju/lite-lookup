@@ -1,5 +1,5 @@
 import pytest
-from litelookup.main import (
+from lite_lookup.main import (
     validate_input,
     InvalidInputError,
     InputTooLongError,

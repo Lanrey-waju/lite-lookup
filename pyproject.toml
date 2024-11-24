@@ -6,6 +6,9 @@ authors = ["Abdulmumin Akinde <lanreywaju97@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
+[tool.poetry.include]
+files = ["log/*.json"]
+
 [tool.poetry.dependencies]
 python = "^3.12"
 groq = "^0.12.0"
