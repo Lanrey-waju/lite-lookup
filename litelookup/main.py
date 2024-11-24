@@ -233,7 +233,7 @@ def main():
             logger.info("normal mode...\n\n")
             response = generate_response(user_input, client, redis_client)
             print_formatted_response(response)
-    except (InvalidInputError, InputTooLongError, UnsupportedCharactersError) as e:
+    except (InvalidInputError, InputTooLongError) as e:
         logger.error(f"Invalid input: {str(e)} ")
 
 

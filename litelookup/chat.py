@@ -1,13 +1,12 @@
 import asyncio
 import logging
 
-from langchain.chains import LLMChain
 from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
 )
-from langchain_core.messages import SystemMessage
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
@@ -44,51 +43,48 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 async def start_conversation_session():
     session = PromptSession(history=FileHistory(str(history_file)))
-
-    model = "llama3-8b-8192"
-
-    groq_chat = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=model)
-
-    system_prompt = SYSTEM_PROMPT
-    conversational_memory_length = 5
-
+    groq_chat = ChatGroq(groq_api_key=GROQ_API_KEY, model_name="llama3-8b-8192")
     memory = ConversationBufferWindowMemory(
-        k=conversational_memory_length, memory_key="chat_history", return_messages=True
+        k=5, memory_key="chat_history", return_messages=True
     )
-    session_interactive = True
     session_timeout = 3600  # 1 hour in seconds
 
-    while session_interactive:
-
+    while True:
         try:
-            with patch_stdout():
-                user_question = await asyncio.wait_for(
-                    session.prompt_async(">> ", bottom_toolbar=chat_bottom_toolbar),
-                    timeout=session_timeout,
-                )
+            user_question = await asyncio.wait_for(
+                session.prompt_async(">> ", bottom_toolbar=chat_bottom_toolbar),
+                timeout=session_timeout,
+            )
+            if user_question and user_question.lower() == "q":
+                break
+
+            if not user_question:
+                continue
+
+            messages = [SystemMessage(content=SYSTEM_PROMPT)]
+
+            # Get chat history from memory
+            chat_history = memory.load_memory_variables({}).get("chat_history", [])
+            if chat_history:
+                messages.extend(chat_history)
+
+            # Add current message
+            messages.append(HumanMessage(content=user_question))
+
+            response = await groq_chat.agenerate([messages])
+            response_text = response.generations[0][0].text
+
+            # Store the interaction in memory
+            memory.save_context({"input": user_question}, {"output": response_text})
+
+            print_formatted_response(response_text)
         except (KeyboardInterrupt, EOFError):
             break
         except asyncio.TimeoutError:
             logger.info("Session timed out due to inactivity")
             break
+        except Exception as e:
+            logger.error(f"Error: {str(e)}")
+            print("An error occurred. Please try again.")
 
-        if user_question and user_question == "q":
-            break
-        else:
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    SystemMessage(content=system_prompt),
-                    MessagesPlaceholder(variable_name="chat_history"),
-                    HumanMessagePromptTemplate.from_template("{human_input}"),
-                ]
-            )
-
-            conversation = LLMChain(
-                llm=groq_chat,
-                prompt=prompt,
-                verbose=False,
-                memory=memory,
-            )
-
-            response = conversation.predict(human_input=user_question)
-            print_formatted_response(response)
+    return False
