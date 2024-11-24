@@ -24,7 +24,7 @@ prompt-toolkit = "^3.0.48"
 pytest = "^8.3.3"
 
 [tool.poetry.scripts]
-lookup = "lite_lookup.main:main"
+lookup = "litelookup.main:main"
 
 [build-system]
 requires = ["poetry-core"]

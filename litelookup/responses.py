@@ -3,7 +3,7 @@ import httpx
 import logging
 from log.logging_config import setup_logging
 
-from lite_lookup.llm import groq_api_call
+from litelookup.llm import groq_api_call
 
 logger = logging.getLogger(__name__)
 setup_logging()
