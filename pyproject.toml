@@ -6,7 +6,7 @@ authors = ["Abdulmumin Akinde <lanreywaju97@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
-include = ["log/*.json"]
+include = ["log/*", "config/*"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
