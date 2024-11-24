@@ -2,7 +2,6 @@ import argparse
 import sys
 import re
 import logging
-import time
 import asyncio
 
 import redis
