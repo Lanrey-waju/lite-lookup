@@ -24,6 +24,9 @@ prompt-toolkit = "^3.0.48"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 
+[tool.poetry.scripts]
+lookup = "lite_lookup.main:main"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
