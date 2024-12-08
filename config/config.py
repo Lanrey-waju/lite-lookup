@@ -74,3 +74,12 @@ def configure_api_key():
         if store_api_key(api_key):
             return api_key
         print("Error storing API key. Please try again.")
+
+
+# set the apikey entry to an empty string
+def reset_config():
+    config = configparser.ConfigParser()
+    config_file = get_config_dir() / "config.ini"
+    config.read(config_file)
+    with config_file.open("w+") as cf:
+        cf.write("[env]\nGROQ_API_KEY=")

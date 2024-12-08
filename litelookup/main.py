@@ -17,7 +17,7 @@ from .responses import (
     generate_nofluff_response,
 )
 from log.logging_config import setup_logging
-from config.config import configure_api_key, load_api_key
+from config.config import configure_api_key, load_api_key, reset_config
 from .chat import start_conversation_session
 from .format import print_formatted_response, normal_bottom_toolbar
 from config.directory import history_file
@@ -73,6 +73,11 @@ def get_input() -> tuple[str, argparse.Namespace]:
         "--programming",
         action="store_true",
         help="optimize response for programming concepts",
+    )
+    parser.add_argument(
+        "reset",
+        action="store_true",
+        help="deletes the configured api key",
     )
     args = parser.parse_args()
 
@@ -181,7 +186,7 @@ def main():
     setup_logging()
     user_input, args = get_input()
     api_key = load_api_key()
-    if api_key is None:
+    if api_key is None or api_key == "":
         api_key = configure_api_key()
         if api_key is None:
             print("API key is required to use this tool. Exiting.")
@@ -229,6 +234,9 @@ def main():
             logger.info("direct mode...\n\n")
             response = generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
+        elif args.reset:
+            reset_config()
+            return
         else:
             logger.info("normal mode...\n\n")
             response = generate_response(user_input, client, redis_client)
