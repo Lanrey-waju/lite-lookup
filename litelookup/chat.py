@@ -1,24 +1,23 @@
 import asyncio
 import logging
 
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
     MessagesPlaceholder,
 )
-from langchain_core.messages import SystemMessage, HumanMessage
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
-from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.patch_stdout import patch_stdout
 
 from config.config import load_api_key
-from .format import print_formatted_response, chat_bottom_toolbar
+from config.directory import history_file
 from log.logging_config import setup_logging
 
-from config.directory import history_file
-
+from .format import chat_bottom_toolbar, print_formatted_response
 
 setup_logging()
 logger = logging.getLogger(__name__)
