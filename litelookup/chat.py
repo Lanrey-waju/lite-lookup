@@ -12,12 +12,13 @@ from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
+from rich.console import Console
 
 from config.config import load_api_key
 from config.directory import history_file
 from log.logging_config import setup_logging
 
-from .format import chat_bottom_toolbar, print_formatted_response
+from .format import chat_bottom_toolbar, stream_groq_response
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -41,6 +42,8 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 
 async def start_conversation_session():
+    console = Console()
+
     session = PromptSession(history=FileHistory(str(history_file)))
     groq_chat = ChatGroq(groq_api_key=GROQ_API_KEY, model_name="llama3-8b-8192")
     memory = ConversationBufferWindowMemory(
@@ -70,13 +73,12 @@ async def start_conversation_session():
             # Add current message
             messages.append(HumanMessage(content=user_question))
 
-            response = await groq_chat.agenerate([messages])
-            response_text = response.generations[0][0].text
+            # Use helper method for streaming
+            response_text = await stream_groq_response(groq_chat, messages, console)
 
             # Store the interaction in memory
             memory.save_context({"input": user_question}, {"output": response_text})
 
-            print_formatted_response(response_text)
         except (KeyboardInterrupt, EOFError):
             break
         except asyncio.TimeoutError:
