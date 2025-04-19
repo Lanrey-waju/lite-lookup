@@ -3,15 +3,9 @@ import logging
 
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.prompts import (
-    ChatPromptTemplate,
-    HumanMessagePromptTemplate,
-    MessagesPlaceholder,
-)
 from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.patch_stdout import patch_stdout
 
 from config.config import load_api_key
 from config.directory import history_file
@@ -42,7 +36,9 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 async def start_conversation_session():
     session = PromptSession(history=FileHistory(str(history_file)))
-    groq_chat = ChatGroq(groq_api_key=GROQ_API_KEY, model_name="llama3-8b-8192")
+    groq_chat = ChatGroq(
+        groq_api_key=GROQ_API_KEY, model_name="deepseek-r1-distill-llama-70b"
+    )
     memory = ConversationBufferWindowMemory(
         k=5, memory_key="chat_history", return_messages=True
     )
