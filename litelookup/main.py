@@ -1,27 +1,28 @@
 import argparse
-import sys
-import re
-import logging
 import asyncio
+import logging
+import re
+import sys
 
-import redis
 import httpx
-from rich import print
+import redis
 from prompt_toolkit import PromptSession
-from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.patch_stdout import patch_stdout
+from rich import print
 
-from .responses import (
-    generate_response,
-    generate_programming_response,
-    generate_nofluff_response,
-)
-from log.logging_config import setup_logging
-from config.config import configure_api_key, load_api_key, reset_config
-from .chat import start_conversation_session
-from .format import print_formatted_response, normal_bottom_toolbar
+from config.config import configure_api_key, configure_model, load_config, reset_config
 from config.directory import history_file
+from log.logging_config import setup_logging
+
 from . import VERSION
+from .chat import start_conversation_session
+from .format import normal_bottom_toolbar, print_formatted_response
+from .responses import (
+    generate_nofluff_response,
+    generate_programming_response,
+    generate_response,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -185,15 +186,17 @@ async def start_normal_session(
 def main():
     setup_logging()
     user_input, args = get_input()
-    api_key = load_api_key()
+    api_key, model = load_config()
     if api_key is None or api_key == "":
         api_key = configure_api_key()
         if api_key is None:
             print("API key is required to use this tool. Exiting.")
             sys.exit(1)
         else:
-            print("API key configured. Please run your command again.")
-            sys.exit(0)
+            model = configure_model()
+            if model:
+                print("API key and model configured. Please run your command again.")
+                sys.exit(0)
     try:
         client = httpx.Client(
             http2=True,

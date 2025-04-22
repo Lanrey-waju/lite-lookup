@@ -1,12 +1,12 @@
 import configparser
 import os
 import platform
-import sys
 from pathlib import Path
 
-from model import GroqModel
 from prompt_toolkit import prompt
 from prompt_toolkit.validation import Validator
+
+from .model import GroqModel
 
 
 def is_valid_APIkey(api_key: str):
@@ -17,8 +17,10 @@ def is_valid_model(model_input: str) -> bool:
     # Check if model is a valid GroqModel
     return any(model_input == model.value for model in GroqModel)
 
-def list_available_models() -> list(str):
+
+def list_available_models() -> list[str]:
     return [model.value for model in GroqModel]
+
 
 apikey_validator = Validator.from_callable(
     is_valid_APIkey,
@@ -48,7 +50,9 @@ def get_user_key():
     print("Get your free API key from https://console.groq.com/keys")
     try:
         api_key = prompt(
-            "Paste API key here: ", validator=apikey_validator, validate_while_typing=False
+            "Paste API key here: ",
+            validator=apikey_validator,
+            validate_while_typing=False,
         ).strip()
         return api_key if api_key else None
     except (KeyboardInterrupt, EOFError):
@@ -87,15 +91,36 @@ def store_model(model: str) -> bool:
         return False
 
 
-def load_api_key():
+def get_config_file() -> Path:
+    return get_config_dir() / "config.ini"
+
+
+def load_api_key() -> str | None:
     config = configparser.ConfigParser()
-    config_file = get_config_dir() / "config.ini"
+    config_file = get_config_file()
     config.read(config_file)
     try:
         api_key = config["env"]["GROQ_API_KEY"]
     except KeyError:
         return None
     return api_key
+
+
+def load_model() -> str | None:
+    config = configparser.ConfigParser()
+    config_file = get_config_file()
+    config.read(config_file)
+    try:
+        model = config["env"]["GROQ_MODEL"]
+    except KeyError:
+        return None
+    return model
+
+
+def load_config():
+    api_key = load_api_key()
+    model = load_model()
+    return api_key, model
 
 
 def configure_api_key():
@@ -117,6 +142,7 @@ def reset_config():
     with config_file.open("w+") as cf:
         cf.write("[env]\nGROQ_API_KEY=")
 
+
 def configure_model():
     while True:
         model = prompt(
@@ -129,4 +155,4 @@ def configure_model():
             return None
         if store_model(model):
             return model
-        print("Error storing model. Please try again."
+        print("Error storing model. Please try again.")
