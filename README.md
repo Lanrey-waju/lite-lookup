@@ -41,7 +41,13 @@ When working on the terminal, I often had the need for quick references about co
 
    Replace "your_api_key_here" with the API key to begin interacting with the tool.
 
-3. Ensure Redis is running:
+   Select the desired model from the list of available models as shown below:
+
+   ![custom model](./assets/custom-groq_model.png)
+
+   pick one of the models using the arrow keys and press enter. Press tab to move to the OK button and press enter to confirm your choice.
+
+3. \*_Ensure Redis is running:_
 
    `redis-cli ping`
 
@@ -115,4 +121,3 @@ If you'd like to contribute to LiteLookup, please fork the repository and submit
 ## Contact
 
 For any questions or support, please contact Abdulmumin at [lanreywaju97@gmail.com]
-
