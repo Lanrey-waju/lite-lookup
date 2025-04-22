@@ -7,7 +7,7 @@ from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 
-from config.config import load_api_key
+from config.config import load_api_key, load_model
 from config.directory import history_file
 from log.logging_config import setup_logging
 
@@ -16,6 +16,7 @@ from .format import chat_bottom_toolbar, print_formatted_response
 setup_logging()
 logger = logging.getLogger(__name__)
 
+GROQ_MODEL = load_model()
 GROQ_API_KEY = load_api_key()
 
 SYSTEM_PROMPT = """
@@ -36,9 +37,7 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 async def start_conversation_session():
     session = PromptSession(history=FileHistory(str(history_file)))
-    groq_chat = ChatGroq(
-        groq_api_key=GROQ_API_KEY, model_name="deepseek-r1-distill-llama-70b"
-    )
+    groq_chat = ChatGroq(groq_api_key=GROQ_API_KEY, model_name=GROQ_MODEL)
     memory = ConversationBufferWindowMemory(
         k=5, memory_key="chat_history", return_messages=True
     )

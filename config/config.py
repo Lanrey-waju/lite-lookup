@@ -4,6 +4,8 @@ import platform
 from pathlib import Path
 
 from prompt_toolkit import prompt
+from prompt_toolkit.shortcuts import radiolist_dialog
+from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import Validator
 
 from .model import GroqModel
@@ -59,6 +61,35 @@ def get_user_key():
         return None
 
 
+def get_user_model() -> str | None:
+    model_choices = [(model, model.value) for model in GroqModel]
+
+    custom_style = Style.from_dict(
+        {
+            "dialog": "bg:#2b2b2b",
+            "dialog frame.label": "bg:#333333 #ffffff bold",
+            "dialog.body": "bg:#2b2b2b #ffffff",
+            "dialog shadow": "bg:#1c1c1c",
+            "radio": "bg:#2b2b2b #ffffff",
+            "radio-selected": "bg:#005fff #ffffff",
+            "button": "bg:#555555 #ffffff",
+            "button.focused": "bg:#005fff #ffffff",
+            "text-area": "bg:#2b2b2b #ffffff",
+        }
+    )
+    result = radiolist_dialog(
+        title="Select a Groq model",
+        text="Choose one of the available models:",
+        values=model_choices,
+        style=custom_style,
+    ).run()
+    if result:
+        return result.value
+    else:
+        print("No model selected")
+        return None
+
+
 def create_config_file(config_dir: Path) -> Path:
     config_dir.mkdir(parents=True, exist_ok=True)
     config_file = config_dir / "config.ini"
@@ -83,7 +114,7 @@ def store_model(model: str) -> bool:
 
     try:
         with config_file.open("a") as f:
-            f.write(f"[env]\nGROQ_MODEL={model}\n")
+            f.write(f"GROQ_MODEL={model}\n")
         os.chmod(config_file, 0o600)
         return True
     except Exception as e:
@@ -145,11 +176,7 @@ def reset_config():
 
 def configure_model():
     while True:
-        model = prompt(
-            "Paste model here: ",
-            validator=model_validator,
-            validate_while_typing=False,
-        ).strip()
+        model = get_user_model()
         if model is None:
             print("Model configuration cancelled.")
             return None

@@ -4,9 +4,10 @@ import time
 import httpx
 from groq import APIConnectionError
 
-from config.config import load_api_key
+from config.config import load_api_key, load_model
 from log.logging_config import setup_logging
 
+GROQ_MODEL = load_model()
 GROQ_API_KEY = load_api_key()
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -21,7 +22,7 @@ def groq_api_call(message: str, client: httpx.Client) -> str | None:
         "Content-Type": "application/json",
     }
     data = {
-        "model": "",
+        "model": GROQ_MODEL,
         "messages": [{"role": "user", "content": message}],
         "max_tokens": 400,
         "temperature": 0.7,
