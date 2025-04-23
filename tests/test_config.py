@@ -1,6 +1,7 @@
-import pytest
-from config import config
 from pathlib import Path
+
+
+from litelookup.config import config
 
 
 def test_is_valid_APIkey():

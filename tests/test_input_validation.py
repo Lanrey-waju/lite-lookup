@@ -1,9 +1,6 @@
 import pytest
-from litelookup.main import (
-    validate_input,
-    InvalidInputError,
-    InputTooLongError,
-)
+
+from litelookup.main import InputTooLongError, InvalidInputError, validate_input
 
 
 def test_validate_empty_input():
