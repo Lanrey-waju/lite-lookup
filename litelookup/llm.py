@@ -4,8 +4,8 @@ import time
 import httpx
 from groq import APIConnectionError
 
-from config.config import load_api_key, load_model
-from log.logging_config import setup_logging
+from .config.config import load_api_key, load_model
+from .log.logging_config import setup_logging
 
 GROQ_MODEL = load_model()
 GROQ_API_KEY = load_api_key()

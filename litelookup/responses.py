@@ -1,9 +1,10 @@
-import redis
-import httpx
 import logging
-from log.logging_config import setup_logging
 
-from litelookup.llm import groq_api_call
+import httpx
+import redis
+
+from .llm import groq_api_call
+from .log.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging()

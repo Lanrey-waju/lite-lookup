@@ -169,9 +169,12 @@ def configure_api_key():
 def reset_config():
     config = configparser.ConfigParser()
     config_file = get_config_dir() / "config.ini"
-    config.read(config_file)
-    with config_file.open("w+") as cf:
-        cf.write("[env]\nGROQ_API_KEY=")
+    if config_file.exists():
+        config.read(config_file)
+        with config_file.open("w+") as cf:
+            cf.write("[env]\nGROQ_API_KEY=")
+    else:
+        return
 
 
 def configure_model():

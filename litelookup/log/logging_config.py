@@ -1,12 +1,12 @@
-import logging.config
+import atexit
+import datetime as dt
 import json
 import logging
-import datetime as dt
-from pathlib import Path
-import atexit
+import logging.config
 import logging.handlers
+from pathlib import Path
 
-from config.directory import get_app_directory
+from litelookup.config.directory import get_app_directory
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",

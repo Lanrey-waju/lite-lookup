@@ -11,13 +11,11 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
 from rich import print
 
-from config.config import configure_api_key, configure_model, load_config, reset_config
-from config.directory import history_file
-from log.logging_config import setup_logging
-
-from . import VERSION
 from .chat import start_conversation_session
+from .config.config import configure_api_key, configure_model, load_config, reset_config
+from .config.directory import history_file
 from .format import normal_bottom_toolbar, print_formatted_response
+from .log.logging_config import setup_logging
 from .responses import (
     generate_nofluff_response,
     generate_programming_response,
@@ -25,6 +23,7 @@ from .responses import (
 )
 
 logger = logging.getLogger(__name__)
+VERSION = "0.20.1"
 
 
 class InvalidInputError(Exception):
@@ -122,7 +121,6 @@ def interactive_session(
     direct: bool = False,
     programming: bool = False,
 ):
-
     if chat is True:
         return start_conversation_session()
     else:
@@ -186,6 +184,9 @@ async def start_normal_session(
 def main():
     setup_logging()
     user_input, args = get_input()
+    if args.reset:
+        reset_config()
+        return
     api_key, model = load_config()
     if api_key is None or api_key == "":
         api_key = configure_api_key()
@@ -237,9 +238,6 @@ def main():
             logger.info("direct mode...\n\n")
             response = generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
-        elif args.reset:
-            reset_config()
-            return
         else:
             logger.info("normal mode...\n\n")
             response = generate_response(user_input, client, redis_client)
