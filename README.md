@@ -28,7 +28,7 @@ When working on the terminal, I often had the need for quick references about co
 
 1. **Install LiteLookup via pip or pipx:**
 
-   `pip install litelookup` or `pipx install litelookup`
+   `pip install litelookup`
 
    Check if LiteLookup is correctly installed with
    `lookup --version`
@@ -116,7 +116,7 @@ Now you have a terminal buddy to brainstorm with.
 
 ## Contributing
 
-If you'd like to contribute to LiteLookup, please fork the repository and submit a pull request. For any issues or suggestions, feel free to open an issue on the GitHub repository.
+If you'd like to contribute to LiteLookup, please fork the repository and submit a pull request. For any issues or suggestions, feel free to open an issue on the GitHub repository. Also, please submit any issue you encounter using the tool and I'll be happy to discuss and fix it.
 
 ## Contact
 
