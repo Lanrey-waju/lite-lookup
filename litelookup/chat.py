@@ -7,7 +7,7 @@ from langchain_groq import ChatGroq
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 
-from .config.config import load_api_key, load_model
+from litelookup.config.config import load_api_key, load_model
 from .config.directory import history_file
 from .format import chat_bottom_toolbar, print_formatted_response
 from .log.logging_config import setup_logging
