@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import logging
+import os
 import re
 import sys
 
@@ -22,8 +23,15 @@ from .responses import (
     generate_response,
 )
 
+if os.environ.get("PYTHON_DEBUG", 0) == "1":
+    import debugpy
+
+    debugpy.listen(("127.0.0.1", 5678))
+    print("debugpy listening on port 5678")
+    debugpy.wait_for_client()
+
 logger = logging.getLogger(__name__)
-VERSION = "0.20.1"
+VERSION = "0.20.3"
 
 
 class InvalidInputError(Exception):
@@ -75,11 +83,15 @@ def get_input() -> tuple[str, argparse.Namespace]:
         help="optimize response for programming concepts",
     )
     parser.add_argument(
-        "reset",
+        "--reset",
         action="store_true",
-        help="deletes the configured api key",
+        help="Reset the API key and model configuration",
     )
     args = parser.parse_args()
+
+    if args.reset:
+        reset_config()
+        return "", args
 
     if args.interactive and not args.content:
         return "", args
