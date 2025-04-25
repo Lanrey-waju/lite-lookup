@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 from litelookup.config import config
 
 
@@ -13,3 +12,8 @@ def test_is_valid_APIkey():
 def test_get_config_dir():
     expected_path = Path.home() / ".config/litelookup"
     assert config.get_config_dir() == expected_path
+
+
+def test_get_config_file():
+    expected_path = Path.home() / ".config/litelookup/config.ini"
+    assert config.get_config_file() == expected_path
