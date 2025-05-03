@@ -219,16 +219,20 @@ def main():
         redis_client = redis.Redis()
         if args.interactive:
             if args.programming:
-                logger.info("Switching to interactive programming mode...\n")
+                logger.info(
+                    f"Switching to interactive programming mode using {model}...\n"
+                )
                 interactive_session(
                     args.interactive,
                     programming=True,
                 )
             elif args.chat:
-                logger.info("Switching to conversational mode...\n\n")
+                logger.info(f"Switching to conversational mode using {model}...\n\n")
                 asyncio.run(interactive_session(args.interactive, chat=True))
             elif args.direct:
-                logger.info("Switching to interactive no-frills mode...\n")
+                logger.info(
+                    f"Switching to interactive no-frills mode using {model}...\n"
+                )
                 asyncio.run(
                     interactive_session(
                         args.interactive,
@@ -236,22 +240,22 @@ def main():
                     )
                 )
             else:
-                logger.info("Switching to interactive mode...\n")
+                logger.info(f"Switching to interactive mode using {model}...\n")
                 interactive_session(
                     args.interactive,
                     programming=False,
                     direct=False,
                 )
         elif args.programming:
-            logger.info("programming mode...\n\n")
+            logger.info(f"programming mode using {model} ...\n\n")
             response = generate_programming_response(user_input, client, redis_client)
             print_formatted_response(response)
         elif args.direct:
-            logger.info("direct mode...\n\n")
+            logger.info(f"direct mode using {model}...\n\n")
             response = generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
         else:
-            logger.info("normal mode...\n\n")
+            logger.info(f"normal mode using {model}...\n\n")
             response = generate_response(user_input, client, redis_client)
             print_formatted_response(response)
     except (InvalidInputError, InputTooLongError) as e:
