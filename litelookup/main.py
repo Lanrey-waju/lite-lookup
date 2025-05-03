@@ -31,7 +31,7 @@ if os.environ.get("PYTHON_DEBUG", 0) == "1":
     debugpy.wait_for_client()
 
 logger = logging.getLogger(__name__)
-VERSION = "0.20.3"
+VERSION = "0.20.4"
 
 
 class InvalidInputError(Exception):
