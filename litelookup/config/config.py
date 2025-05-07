@@ -7,6 +7,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.shortcuts import radiolist_dialog
 from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import Validator
+from pydantic import SecretStr
 
 from .model import GroqModel
 
@@ -126,18 +127,20 @@ def get_config_file() -> Path:
     return get_config_dir() / "config.ini"
 
 
-def load_api_key() -> str | None:
+def load_api_key() -> SecretStr | None:
+    api_key = None
     config = configparser.ConfigParser()
     config_file = get_config_file()
     config.read(config_file)
     try:
         api_key = config["env"]["GROQ_API_KEY"]
     except KeyError:
-        return None
-    return api_key
+        return api_key
+    return SecretStr(api_key)
 
 
 def load_model() -> str | None:
+    model = None
     config = configparser.ConfigParser()
     config_file = get_config_file()
     config.read(config_file)

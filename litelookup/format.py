@@ -1,7 +1,7 @@
-from rich.padding import Padding
+from prompt_toolkit.formatted_text import HTML
 from rich import print
 from rich.markdown import Markdown
-from prompt_toolkit.formatted_text import HTML
+from rich.padding import Padding
 
 
 def print_formatted_response(response: str):
