@@ -2,7 +2,6 @@ import argparse
 import asyncio
 import logging
 import os
-import re
 import sys
 
 import httpx
@@ -112,12 +111,6 @@ def validate_input(input: str, interactive: bool) -> str:
     if len(input) > 150:
         raise InputTooLongError(
             "Text cannot be more than 150 characters long. Consider shortening."
-        )
-
-    # Input cannot contain two or more hyphens together
-    if re.search(r"[-]{2,}", input):
-        raise UnsupportedCharactersError(
-            "Text cannot contain two or more hyphens together."
         )
 
     # preserve words that are ALL CAPS
