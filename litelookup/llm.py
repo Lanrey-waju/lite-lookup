@@ -18,7 +18,7 @@ setup_logging()
 
 def groq_api_call(message: str, client: httpx.Client) -> str | None:
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Authorization": f"Bearer {GROQ_API_KEY.get_secret_value()}",
         "Content-Type": "application/json",
     }
     data = {

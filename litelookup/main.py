@@ -193,7 +193,7 @@ def main():
         reset_config()
         return
     api_key, model = load_config()
-    if api_key is None or api_key == "":
+    if api_key == "":
         api_key = configure_api_key()
         if api_key is None:
             print("API key is required to use this tool. Exiting.")

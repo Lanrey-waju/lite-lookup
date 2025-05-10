@@ -127,15 +127,15 @@ def get_config_file() -> Path:
     return get_config_dir() / "config.ini"
 
 
-def load_api_key() -> SecretStr | None:
-    api_key = None
+def load_api_key() -> SecretStr:
+    api_key = ""
     config = configparser.ConfigParser()
     config_file = get_config_file()
     config.read(config_file)
     try:
         api_key = config["env"]["GROQ_API_KEY"]
     except KeyError:
-        return api_key
+        return SecretStr(api_key)
     return SecretStr(api_key)
 
 
