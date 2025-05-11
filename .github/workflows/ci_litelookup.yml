@@ -1,7 +1,8 @@
+---
 name: LiteLookup CI
 
 on:
-  push: 
+  push:
     branches:
       - main
   pull_request:
@@ -15,24 +16,25 @@ jobs:
 
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
-        run: curl -sSL https://install.python-poetry.org | python3 -
+      - name: Install UV
+        run: |
+          pip install uv
 
       - name: Install depemdencies
-        run: poetry install --with dev
+        run: |
+          uv pip install --upgrade pip
+          up pip install .[dev]
 
       - name: Run tests
         run: poetry run pytest
 
-      
