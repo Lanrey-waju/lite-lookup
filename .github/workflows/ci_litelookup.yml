@@ -26,9 +26,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install UV
-        run: |
-          pip install uv
+      - name: Set environment variable
+        run: echo "VIRTUAL_ENV=${Python_ROOT_DIR}" >> $GITHUB_ENV
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
 
       - name: Install depemdencies
         run: |
