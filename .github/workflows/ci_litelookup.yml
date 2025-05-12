@@ -21,22 +21,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Set environment variable
-        run: echo "VIRTUAL_ENV=${Python_ROOT_DIR}" >> $GITHUB_ENV
-
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependecy-glob: "uv.lock"
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
 
       - name: Install depemdencies
         run: |
           uv pip install --upgrade pip
           up pip install .[dev]
+        env:
+          UV_SYSTEM_PYTHON: true
 
       - name: Run tests
-        run: poetry run pytest
+        run: uv run pytest
 
