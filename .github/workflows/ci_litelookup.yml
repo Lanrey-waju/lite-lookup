@@ -16,6 +16,7 @@ jobs:
 
     env:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      UV_SYSTEM_PYTHON: 1
 
     steps:
       - name: Checkout code
@@ -27,17 +28,8 @@ jobs:
           enable-cache: true
           cache-dependecy-glob: "uv.lock"
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version-file: ".python-version"
-
-      - name: Install depemdencies
-        run: |
-          uv pip install --upgrade pip
-          up pip install .[dev]
-        env:
-          UV_SYSTEM_PYTHON: true
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
 
       - name: Run tests
         run: uv run pytest
