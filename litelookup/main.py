@@ -30,7 +30,7 @@ if os.environ.get("PYTHON_DEBUG", 0) == "1":
     debugpy.wait_for_client()
 
 logger = logging.getLogger(__name__)
-VERSION = "0.21.1"
+VERSION = "0.21.3"
 
 
 class InvalidInputError(Exception):
@@ -250,6 +250,13 @@ async def main():
             print_formatted_response(response)
     except (InvalidInputError, InputTooLongError) as e:
         logger.error(f"Invalid input: {str(e)} ")
+
+
+def run_main():
+    """synchronous wrapper for the async main function"""
+    import asyncio
+
+    asyncio.run(main())
 
 
 if __name__ == "__main__":

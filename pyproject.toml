@@ -1,6 +1,6 @@
 [project]
 name = "litelookup"
-version = "0.21.1"
+version = "0.21.3"
 description = "A command line tool for quick concept lookups"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -24,7 +24,7 @@ dev = [
 ]
 
 [project.scripts]
-lookup = "litelookup.main:main"
+lookup = "litelookup.main:run_main"
 
 [build-system]  
 requires = ["poetry-core"]
