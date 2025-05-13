@@ -30,7 +30,7 @@ if os.environ.get("PYTHON_DEBUG", 0) == "1":
     debugpy.wait_for_client()
 
 logger = logging.getLogger(__name__)
-VERSION = "0.21.0"
+VERSION = "0.21.1"
 
 
 class InvalidInputError(Exception):
@@ -120,16 +120,16 @@ def validate_input(input: str, interactive: bool) -> str:
     return input.lower().strip()
 
 
-def interactive_session(
+async def interactive_session(
     session_interactive: bool,
     chat: bool = False,
     direct: bool = False,
     programming: bool = False,
 ):
     if chat is True:
-        return start_conversation_session()
+        return await start_conversation_session()
     else:
-        return start_normal_session(
+        return await start_normal_session(
             session_interactive=session_interactive,
             direct=direct,
             programming=programming,
@@ -212,13 +212,13 @@ async def main():
                 logger.info(
                     f"Switching to interactive programming mode using {model}...\n"
                 )
-                interactive_session(
+                await interactive_session(
                     args.interactive,
                     programming=True,
                 )
             elif args.chat:
                 logger.info(f"Switching to conversational mode using {model}...\n\n")
-                asyncio.run(interactive_session(args.interactive, chat=True))
+                await interactive_session(args.interactive, chat=True)
             elif args.direct:
                 logger.info(
                     f"Switching to interactive no-frills mode using {model}...\n"
@@ -231,7 +231,7 @@ async def main():
                 )
             else:
                 logger.info(f"Switching to interactive mode using {model}...\n")
-                interactive_session(
+                await interactive_session(
                     args.interactive,
                     programming=False,
                     direct=False,
