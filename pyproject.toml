@@ -24,7 +24,7 @@ dev = [
 ]
 
 [project.scripts]
-lookup = "litelookup.main:main"
+lookup = "litelookup.main:run_main"
 
 [build-system]  
 requires = ["poetry-core"]

@@ -252,5 +252,12 @@ async def main():
         logger.error(f"Invalid input: {str(e)} ")
 
 
+def run_main():
+    """synchronous wrapper for the async main function"""
+    import asyncio
+
+    asyncio.run(main())
+
+
 if __name__ == "__main__":
     asyncio.run(main())
