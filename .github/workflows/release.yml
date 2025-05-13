@@ -99,7 +99,9 @@ jobs:
           poetry version ${{ needs.details.outputs.new_version }}
 
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: |
+          uv lock
+          uv sync --locked --all-extras --dev
 
       - name: Build source and wheel distribution
         run: |
