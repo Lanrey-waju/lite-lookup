@@ -25,3 +25,7 @@ dev = [
 
 [project.scripts]
 lookup = "litelookup.main:main"
+
+[build-system]  
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
