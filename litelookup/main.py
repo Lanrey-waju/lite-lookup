@@ -223,11 +223,9 @@ async def main():
                 logger.info(
                     f"Switching to interactive no-frills mode using {model}...\n"
                 )
-                asyncio.run(
-                    interactive_session(
-                        args.interactive,
-                        direct=True,
-                    )
+                await interactive_session(
+                    args.interactive,
+                    direct=True,
                 )
             else:
                 logger.info(f"Switching to interactive mode using {model}...\n")
