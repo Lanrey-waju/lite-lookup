@@ -1,5 +1,5 @@
+import asyncio
 import logging
-import time
 
 import httpx
 from groq import APIConnectionError
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 setup_logging()
 
 
-def groq_api_call(message: str, client: httpx.Client) -> str | None:
+async def async_groq_api_call(message: str, client: httpx.AsyncClient) -> str:
     headers = {
         "Authorization": f"Bearer {GROQ_API_KEY.get_secret_value()}",
         "Content-Type": "application/json",
@@ -27,25 +27,24 @@ def groq_api_call(message: str, client: httpx.Client) -> str | None:
         "max_tokens": 400,
         "temperature": 0.7,
     }
-
     max_retries, retry_delay = 3, 1
     for attempt in range(max_retries):
         try:
-            response = client.post(
+            response = await client.post(
                 GROQ_API_URL, headers=headers, json=data, timeout=15.0
             )
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
         except (httpx.ConnectError, httpx.TimeoutException, APIConnectionError) as e:
             if attempt == max_retries - 1:
-                logger.error(f"Connection error occured: {e}", exc_info=True)
+                logger.error(f"Connection error occurred: {e}", exc_info=True)
             # Exponential backoff
-            time.sleep(retry_delay * (2**attempt))
+            await asyncio.sleep(retry_delay * (2**attempt))
         except httpx.HTTPStatusError as e:
             if e.response.status_code >= 500:
                 if attempt == max_retries - 1:
                     raise
-                time.sleep(retry_delay * (2**attempt))  # Exponential backoff
+                await asyncio.sleep(retry_delay * (2**attempt))  # Exponential backoff
             else:
                 raise  # Client errors should not be retried
-    return None
+    return "Sorry, there was a problem connecting to the server. Please try again"

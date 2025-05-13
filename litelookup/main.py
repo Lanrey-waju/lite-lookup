@@ -5,7 +5,7 @@ import os
 import sys
 
 import httpx
-import redis
+import redis.asyncio as redis
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
@@ -142,9 +142,7 @@ async def start_normal_session(
     direct: bool = False,
 ):
     session = PromptSession(mouse_support=True, history=FileHistory(str(history_file)))
-    with httpx.Client(
-        http2=True, limits=httpx.Limits(max_keepalive_connections=5, max_connections=10)
-    ) as client:
+    async with httpx.AsyncClient() as client:
         # Set up Redis connection
         redis_client = redis.Redis(host="localhost", port=6379, db=0)
 
@@ -176,17 +174,19 @@ async def start_normal_session(
                 break
 
             if text and direct is True:
-                response = generate_nofluff_response(text, client, redis_client)
+                response = await generate_nofluff_response(text, client, redis_client)
                 print_formatted_response(response)
             elif text and programming is True:
-                response = generate_programming_response(text, client, redis_client)
+                response = await generate_programming_response(
+                    text, client, redis_client
+                )
                 print_formatted_response(response)
             else:
-                response = generate_response(text, client, redis_client)
+                response = await generate_response(text, client, redis_client)
                 print_formatted_response(response)
 
 
-def main():
+async def main():
     setup_logging()
     user_input, args = get_input()
     if args.reset:
@@ -204,10 +204,7 @@ def main():
                 print("API key and model configured. Please run your command again.")
                 sys.exit(0)
     try:
-        client = httpx.Client(
-            http2=True,
-            limits=httpx.Limits(max_keepalive_connections=5, max_connections=10),
-        )
+        client = httpx.AsyncClient()
         user_input, args = get_input()
         redis_client = redis.Redis()
         if args.interactive:
@@ -241,19 +238,21 @@ def main():
                 )
         elif args.programming:
             logger.info(f"programming mode using {model} ...\n\n")
-            response = generate_programming_response(user_input, client, redis_client)
+            response = await generate_programming_response(
+                user_input, client, redis_client
+            )
             print_formatted_response(response)
         elif args.direct:
             logger.info(f"direct mode using {model}...\n\n")
-            response = generate_nofluff_response(user_input, client, redis_client)
+            response = await generate_nofluff_response(user_input, client, redis_client)
             print_formatted_response(response)
         else:
             logger.info(f"normal mode using {model}...\n\n")
-            response = generate_response(user_input, client, redis_client)
+            response = await generate_response(user_input, client, redis_client)
             print_formatted_response(response)
     except (InvalidInputError, InputTooLongError) as e:
         logger.error(f"Invalid input: {str(e)} ")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
