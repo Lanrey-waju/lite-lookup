@@ -3,7 +3,7 @@ import os
 import platform
 from pathlib import Path
 
-from prompt_toolkit import prompt
+from prompt_toolkit import PromptSession
 from prompt_toolkit.shortcuts import radiolist_dialog
 from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import Validator
@@ -49,20 +49,22 @@ def get_config_dir():
         return Path(os.path.expanduser("~/.litelookup"))
 
 
-def get_user_key():
+async def get_user_key():
     print("Get your free API key from https://console.groq.com/keys")
+    session = PromptSession()
     try:
-        api_key = prompt(
+        api_key = await session.prompt_async(
             "Paste API key here: ",
+            is_password=True,
             validator=apikey_validator,
             validate_while_typing=False,
-        ).strip()
-        return api_key if api_key else None
+        )
+        return api_key.strip() if api_key else None
     except (KeyboardInterrupt, EOFError):
         return None
 
 
-def get_user_model() -> str | None:
+async def get_user_model() -> str:
     model_choices = [(model, model.value) for model in GroqModel]
 
     custom_style = Style.from_dict(
@@ -78,17 +80,17 @@ def get_user_model() -> str | None:
             "text-area": "bg:#2b2b2b #ffffff",
         }
     )
-    result = radiolist_dialog(
+    result = await radiolist_dialog(
         title="Select a Groq model",
         text="Choose one of the available models:",
         values=model_choices,
         style=custom_style,
-    ).run()
+    ).run_async()
     if result:
         return result.value
     else:
-        print("No model selected")
-        return None
+        print("No model selected... defaulting to gemma2-9b-it")
+        return model_choices[1][1]
 
 
 def create_config_file(config_dir: Path) -> Path:
@@ -139,15 +141,15 @@ def load_api_key() -> SecretStr:
     return SecretStr(api_key)
 
 
-def load_model() -> str | None:
-    model = None
+def load_model() -> str:
+    model = ""
     config = configparser.ConfigParser()
     config_file = get_config_file()
     config.read(config_file)
     try:
         model = config["env"]["GROQ_MODEL"]
     except KeyError:
-        return None
+        return model
     return model
 
 
@@ -157,9 +159,9 @@ def load_config():
     return api_key, model
 
 
-def configure_api_key():
+async def configure_api_key():
     while True:
-        api_key = get_user_key()
+        api_key = await get_user_key()
         if api_key is None:
             print("API key configuration cancelled.")
             return None
@@ -180,9 +182,9 @@ def reset_config():
         return
 
 
-def configure_model():
+async def configure_model():
     while True:
-        model = get_user_model()
+        model = await get_user_model()
         if model is None:
             print("Model configuration cancelled.")
             return None

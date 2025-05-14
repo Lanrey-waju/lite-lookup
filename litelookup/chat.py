@@ -20,12 +20,6 @@ GROQ_MODEL = load_model()
 GROQ_API_KEY = load_api_key()
 
 
-def get_groq_model(model_input: str | None) -> str:
-    if model_input is None:
-        return ""
-    return model_input
-
-
 SYSTEM_PROMPT = """
 You are a friendly, helpful, and knowledgeable conversational assistant. Your goal is to provide clear, concise, and accessible information while maintaining a conversational tone. Follow these guidelines:
 
@@ -44,7 +38,7 @@ Remember, your aim is to make information as accessible as possible while engagi
 
 async def start_conversation_session():
     session = PromptSession(history=FileHistory(str(history_file)))
-    groq_chat = ChatGroq(api_key=GROQ_API_KEY, model=get_groq_model(GROQ_MODEL))
+    groq_chat = ChatGroq(api_key=GROQ_API_KEY, model=GROQ_MODEL)
     memory = ConversationBufferWindowMemory(
         k=5, memory_key="chat_history", return_messages=True
     )

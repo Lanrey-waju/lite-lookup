@@ -9,6 +9,7 @@ import redis.asyncio as redis
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
+from pydantic import SecretStr
 from rich import print
 
 from .chat import start_conversation_session
@@ -30,7 +31,7 @@ if os.environ.get("PYTHON_DEBUG", 0) == "1":
     debugpy.wait_for_client()
 
 logger = logging.getLogger(__name__)
-VERSION = "0.21.3"
+VERSION = "0.21.4"
 
 
 class InvalidInputError(Exception):
@@ -193,13 +194,13 @@ async def main():
         reset_config()
         return
     api_key, model = load_config()
-    if api_key == "":
-        api_key = configure_api_key()
+    if api_key == SecretStr(""):
+        api_key = await configure_api_key()
         if api_key is None:
             print("API key is required to use this tool. Exiting.")
             sys.exit(1)
         else:
-            model = configure_model()
+            model = await configure_model()
             if model:
                 print("API key and model configured. Please run your command again.")
                 sys.exit(0)
