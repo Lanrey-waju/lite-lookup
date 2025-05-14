@@ -1,15 +1,15 @@
 [project]
 name = "litelookup"
-version = "0.21.4"
+version = "0.21.5"
 description = "A command line tool for quick concept lookups"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "groq>=0.24.0",
     "httpx[http2]>=0.28.1",
-    "langchain==0.1.16",
-    "langchain-core>=0.1.53",
-    "langchain-groq>=0.1.5",
+    "langchain==0.3.0",
+    "langchain-core>=0.3.56",
+    "langchain-groq>=0.2.5",
     "prompt-toolkit>=3.0.51",
     "pytest>=8.3.5",
     "python-dotenv>=1.1.0",
